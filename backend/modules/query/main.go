@@ -57,8 +57,8 @@ func main() {
 			case <-mainLoopStop:
 				logger.Info("Stopping gracefully")
 				return
-			default:
-				time.Sleep(time.Second * time.Duration(config.Main.QueryIntervalSec))
+			case <-time.After(time.Second * time.Duration(config.Main.QueryIntervalSec)):
+				continue
 			}
 
 		}

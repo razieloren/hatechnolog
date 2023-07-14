@@ -1,3 +1,3 @@
 # Hatechnolog
 
-Hola
+Website & all other services Hatechnolog has to offer.

@@ -40,3 +40,14 @@ config:
     - Add your service's `AutoMigrate` function to the main `AutoMigrate` function.
     - Add your worker & config to the workers definition list.
     - Again, make sure you updated the main config with your config.
+
+## Building
+
+- Inspect the `Makefile`.
+- The build process is made of 2 main stages:
+    - Creating the `query` binary.
+    - Building a local Docker image that runs `query`.
+- The build system expects a `config.yaml` to be found in the root directory of the module (next to this file).
+- The buils system creates 2 binaries & 2 docker images, one for `darwin-arm64` (Used for local tests) and one for `linux-amd64` (Used for operational purposes).
+- You may build only for one platform using `make *-image`.
+- Anyhow, in order to test the module, please use the docker container and not the binary directly since this is how it is going to be executed operationally.

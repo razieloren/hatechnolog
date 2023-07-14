@@ -1,1 +1,4 @@
+venv/
+out/
 config.yaml
+deploy.yaml
