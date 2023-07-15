@@ -7,8 +7,8 @@ type ChannelStats struct {
 	ChannelName string  `gorm:"NOT NULL;size:20"`
 	Success     bool    `gorm:"NOT NULL"`
 	Error       *string `gorm:"default:NULL"`
-	Subscribers uint64
-	Views       uint64
+	Subscribers uint64  `gorm:"NOT NULL"`
+	Views       uint64  `gorm:"NOT NULL"`
 }
 
 func (channelStats *ChannelStats) TableName() string {

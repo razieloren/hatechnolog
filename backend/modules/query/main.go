@@ -6,6 +6,7 @@ import (
 	"backend/entrypoint"
 	"backend/modules/query/services"
 	"backend/modules/query/services/discord"
+	"backend/modules/query/services/github"
 	"backend/modules/query/services/youtube"
 	"os"
 	"os/signal"
@@ -23,6 +24,7 @@ type Config struct {
 	} `yaml:"main"`
 	Discord discord.Config `yaml:"discord"`
 	Youtube youtube.Config `yaml:"youtube"`
+	Github  github.Config  `yaml:"github"`
 }
 
 func main() {
@@ -31,6 +33,7 @@ func main() {
 	servicesDef := []*services.Service{
 		services.NewService("Discord", &config.Discord, discord.Work, discord.AutoMigrate),
 		services.NewService("Youtube", &config.Youtube, youtube.Work, youtube.AutoMigrate),
+		services.NewService("Github", &config.Github, github.Work, github.AutoMigrate),
 	}
 
 	dbConn, err := db.CreateDBConnection(logger, &config.Main.Database)

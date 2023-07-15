@@ -25,6 +25,11 @@ config:
     apiKey: STRING
     targetChannels:
     - name: STRING
+  github:
+    apiKey: STRING
+    targetRepos:
+    - name: STRING
+      owner: STRING
 ```
 
 ## Adding a New Service Checklist
@@ -36,10 +41,7 @@ config:
     - `models.go` - All the GORM models you will be using in this service. Make sure to expose an `AutoMigrate` function so these models will actually get created.
     - `worker.go` - This is the code which will run periodically. Please use the same function names as declared on the other modules :)
     - `[SERVICE].go` - Actual service definition.
-- In `main.go`:
-    - Add your service's `AutoMigrate` function to the main `AutoMigrate` function.
-    - Add your worker & config to the workers definition list.
-    - Again, make sure you updated the main config with your config.
+- In `main.go`, Add your worker & config to the workers definition list.
 
 ## Building
 
