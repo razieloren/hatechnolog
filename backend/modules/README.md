@@ -43,3 +43,4 @@ config:
 ```
 - This config will deploy `query` of the specified version to the specified SSH server, by pushing the relevant Docker registry.
 - To add more modules, simply add another section under `modules`.
+- Each deploy process creates a temporary tag to the selected inage in order to push it to the remote Docker registry. This tag should be removed automatically.

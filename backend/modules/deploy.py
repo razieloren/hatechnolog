@@ -8,7 +8,6 @@ import argparse
 import paramiko
 import coloredlogs
 
-from docker.errors import ImageNotFound
 from docker.models.images import Image
 
 logger = logging.getLogger('deploy')
@@ -109,12 +108,12 @@ def main():
                 logger.info(f'Module "{module_name}" new container ID: {container_id}')
                 time.sleep(10)
                 if ssh_client.get_module_active_container(module_name) is None:
-                    logger.error(f'Module "{module_name}" is dead :(')
+                    logger.error(f'Cannot find "{module_name}"\'s container, it might be dead :(')
             finally:
                 ssh_client.close()
         except Exception as e:
             logger.error(f'Unexpected error occured: {e}')
-        logger.info(f'Done "{module_name}"')
+        logger.info(f'Done deploying module "{module_name}"')
 
 if __name__ == '__main__':
     main()

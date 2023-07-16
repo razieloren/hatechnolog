@@ -1,0 +1,22 @@
+syntax = "proto3";
+package messages;
+
+option go_package = "backend/modules/api/endpoints/messages";
+
+import "stats/api.proto";
+
+enum Endpoint {
+    latest_stats_push = 0;
+}
+
+message EndpointIntent {
+    Endpoint endpoint = 1;
+}
+
+message Wrapper {
+    oneof message {
+        EndpointIntent endpoint_intent = 1;
+        LatestStatsPushRequest latest_stats_push_request = 2;
+        LatestStatsPushResponse latest_stats_push_response = 3;
+    }
+}

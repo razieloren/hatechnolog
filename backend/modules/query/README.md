@@ -36,7 +36,10 @@ config:
 
 - Create a folder under `services` with your service names.
 - Create the following files:
-    - `config.go` - The services config, then add it to the main config under `main.go`. Also, update your local `config.yaml` file, and the config documentation in this file.
+    - `config.go` - The services config
+      - Add it to the main config under `main.go`
+      - Update your local `config.yaml` file
+      - Update the config documentation in this file.
     - `consts.go` - General service consts.
     - `models.go` - All the GORM models you will be using in this service. Make sure to expose an `AutoMigrate` function so these models will actually get created.
     - `worker.go` - This is the code which will run periodically. Please use the same function names as declared on the other modules :)
@@ -53,3 +56,4 @@ config:
 - The buils system creates 2 binaries & 2 docker images, one for `darwin-arm64` (Used for local tests) and one for `linux-amd64` (Used for operational purposes).
 - You may build only for one platform using `make *-image`.
 - Anyhow, in order to test the module, please use the docker container and not the binary directly since this is how it is going to be executed operationally.
+- In order to clean some artficats, you may user: `make clean-binaries`, `make clean-images`, and `make clean` - Which is cleaning everything.

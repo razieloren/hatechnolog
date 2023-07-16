@@ -1,0 +1,9 @@
+- doc protobuf (protoc)
+    - `brew install protobuf` - For protoc
+    - `go install google.golang.org/protobuf/cmd/protoc-gen-go@latest` for GO plugin
+    - Make sure `$GOPATH/bin` is in your PATH
+    - For JS:
+        -  npm install -g protoc-gen-ts
+- doc websocket
+- doc the config here
+- doc message router

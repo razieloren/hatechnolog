@@ -68,9 +68,7 @@ func main() {
 	}()
 
 	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, syscall.SIGINT)
-	signal.Notify(stop, syscall.SIGTERM)
-	signal.Notify(stop, syscall.SIGKILL)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 	<-stop
 	mainLoopStop <- true
 	wg.Wait()

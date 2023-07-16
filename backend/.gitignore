@@ -1,4 +1,5 @@
 venv/
 out/
+modules/api/endpoints/messages
 config.yaml
 deploy.yaml

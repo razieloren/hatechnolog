@@ -1,0 +1,31 @@
+syntax = "proto3";
+package messages;
+
+option go_package = "backend/modules/api/endpoints/messages/stats";
+
+/*
+    The reason behind the "valid" field:
+    The backend might run into a problem with one of the services.
+    We don't want it to affect other services that are working fine.
+    Hopefully some skilled developer will see the backend logs, and fix the issue :)
+*/
+
+message LatestDiscordStats {
+    uint32 total_members = 1;
+    uint32 new_members = 2;
+    uint32 new_members_period_days = 3;
+    float join_avg_sec = 4;
+    bool valid = 5;
+}
+
+message LatestYoutubeStats {
+    uint64 subscribers = 1;
+    uint64 views = 2;
+    bool valid = 3;
+}
+
+message LatestGithubStats {
+    uint64 contributors = 1;
+    uint64 commits = 2;
+    bool valid = 3;
+}

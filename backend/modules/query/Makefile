@@ -15,7 +15,7 @@ DARWIN_IMAGE_NAME := hatechnolog/modules/${MODULE_NAME}-drawin:${MAJOR_VERSION}.
 
 GO_BUILD_CMD := CGO_ENABLED=0 go build -trimpath -a -ldflags="-w -s -buildid=" -o
 
-.PHONY: all clean binaries images linux-image darwin-image
+.PHONY: all clean clean-binaries clean-images binaries images linux-image darwin-image
 default: all
 
 ${LINUX_OUTPUT_DIR}: |
@@ -42,7 +42,12 @@ images: linux-image darwin-image
 
 all: binaries images
 
-clean:
+clean-binaries:
 	rm -rf ${OUT_DIR}
+
+clean-images:
+	docker image rm `docker image ls | grep hatechnolog/modules/query | tr -s ' ' | cut -d' ' -f3 | tr '\n' ' '`
+
+clean: clean-binaries clean-images
 
 
