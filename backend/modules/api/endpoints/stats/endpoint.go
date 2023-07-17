@@ -2,7 +2,7 @@ package stats
 
 import (
 	"backend/modules/api/endpoints/messages"
-	"backend/ws"
+	"backend/x/ws"
 	"fmt"
 	"time"
 

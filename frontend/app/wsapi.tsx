@@ -2,8 +2,7 @@ import {Websocket, WebsocketBuilder} from 'websocket-ts';
 import {messages as wrapper} from './messages/wrapper'
 
 export function InitAPIWS(endpoint: wrapper.Endpoint, onReady?: (instance: Websocket) => void, onMessage?: (instance: Websocket, data: any) => void): Websocket {
-    //const builder = new WebsocketBuilder(process.env.API_WS_ADDRESS!)
-    const builder = new WebsocketBuilder("ws://localhost:8080/ws")
+    const builder = new WebsocketBuilder(process.env.API_WS_URL!)
     if (onMessage !== undefined) {
         builder.onMessage((ws, e) => {
             const reader = new FileReader();

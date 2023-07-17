@@ -1,8 +1,8 @@
 package entrypoint
 
 import (
-	"backend/cnf"
-	"backend/log"
+	"backend/x/cnf"
+	"backend/x/log"
 	"flag"
 
 	"go.uber.org/zap"

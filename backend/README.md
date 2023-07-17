@@ -1,9 +1,9 @@
 # Backend
 
-The backend modules of "Hatechnolog" server.
+The backend modules of "Hatechnolog" platform.
 
-## Configuration Files
-
-- For the proper functioning of a module, a configuration file is required. Each module provides documentation on its configuration structure in the corresponding folder's "README" file.
-- The configuration parser utilizes the `YAML` format.
-- By default, modules will search for their configuration file under the `./config.yaml` path.
+## Directory Tree
+- `x`: Shared golang library code used by all modules and components in the backend.
+- `docs`: Random output of documents that are saved during development that might save time to someone, somewhere, sometime.
+- `modules`: Runnable backend modules.
+    - `deploylib`: Various helpers to `deploy.py` so everything won't be in one big file you know.

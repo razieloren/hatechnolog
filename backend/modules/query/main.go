@@ -1,13 +1,13 @@
 package main
 
 import (
-	"backend/cnf"
-	"backend/db"
-	"backend/entrypoint"
 	"backend/modules/query/services"
 	"backend/modules/query/services/discord"
 	"backend/modules/query/services/github"
 	"backend/modules/query/services/youtube"
+	"backend/x/cnf"
+	"backend/x/db"
+	"backend/x/entrypoint"
 	"os"
 	"os/signal"
 	"sync"

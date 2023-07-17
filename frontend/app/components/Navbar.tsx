@@ -1,13 +1,11 @@
-import Image from 'next/image'
-import mainLogo from '../../public/technolog_logo.png'
-
 export default function Navbar() {
     return (
         <nav className="nav">
             <ul className="nav-items">
-                <li>בואו לתכנת, זה כיף</li>
-                <li>דעתי על דברים</li>
-                <li>מחסן</li>
+                <li>בלוג</li>
+                <li>קרמה</li>
+                <li>פלטפורמות</li>
+                <li>צרו קשר</li>
             </ul>
         </nav>
     )

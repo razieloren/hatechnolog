@@ -1,12 +1,10 @@
 package main
 
 import (
-	"backend/db"
-	"backend/entrypoint"
 	"backend/modules/api/endpoints"
+	"backend/x/db"
+	"backend/x/entrypoint"
 	"fmt"
-	"net"
-	"net/http"
 
 	"github.com/brpaz/echozap"
 	"github.com/labstack/echo/v4"
@@ -16,13 +14,20 @@ import (
 type Config struct {
 	Main struct {
 		Server struct {
-			ListenAddr       *string `yaml:"listenAddr"`
-			ListenPort       *int    `yaml:"listenPort"`
-			ListenUnixSocket *string `yaml:"listenUnixSocket"`
+			ListenAddr string `yaml:"listenAddr"`
+			ListenPort int    `yaml:"listenPort"`
+			TLS        struct {
+				KeyPath       *string `yaml:"key_path"`
+				FullchainPath *string `yaml:"fullchain_path"`
+			} `yaml:"tls"`
 		} `yaml:"server"`
 		Database db.Config `yaml:"database"`
 	} `yaml:"main"`
 	Endpoints endpoints.Config `yaml:"endpoints"`
+}
+
+func (config *Config) TLSConfigured() bool {
+	return config.Main.Server.TLS.FullchainPath != nil && config.Main.Server.TLS.KeyPath != nil
 }
 
 func main() {
@@ -42,18 +47,22 @@ func main() {
 	router := endpoints.NewRouter(logger, dbConn, &config.Endpoints)
 	e.GET("/ws", router.HandleWS)
 
-	if config.Main.Server.ListenUnixSocket != nil {
-		logger.Info("Starting echo server using a UNIX socket", zap.String("path", *config.Main.Server.ListenUnixSocket))
-		listener, err := net.Listen("unix", *config.Main.Server.ListenUnixSocket)
-		if err != nil {
-			logger.Fatal("Error listening on UNIX socket", zap.String("path", *config.Main.Server.ListenUnixSocket), zap.Error(err))
-		}
-		e.Listener = listener
-		server := new(http.Server)
-		e.Logger.Fatal(e.StartServer(server))
-	} else if config.Main.Server.ListenAddr != nil && config.Main.Server.ListenPort != nil {
-		logger.Info("Starting echo server using normal socket", zap.String("addr", *config.Main.Server.ListenAddr), zap.Int("port", *config.Main.Server.ListenPort))
-		e.Logger.Fatal(e.Start(fmt.Sprintf("%s:%d", *config.Main.Server.ListenAddr, *config.Main.Server.ListenPort)))
+	serverConf := &config.Main.Server
+	if config.TLSConfigured() {
+		logger.Info("Starting HTTPS server",
+			zap.String("addr", serverConf.ListenAddr),
+			zap.Int("port", serverConf.ListenPort))
+		e.Logger.Fatal(
+			e.StartTLS(
+				fmt.Sprintf("%s:%d", serverConf.ListenAddr, serverConf.ListenPort),
+				*serverConf.TLS.FullchainPath,
+				*serverConf.TLS.KeyPath))
 	}
-	logger.Fatal("Either a UNIX socket or a normal socket must be defined in the config.yaml file")
+
+	logger.Info("Starting HTTP server",
+		zap.String("addr", serverConf.ListenAddr),
+		zap.Int("port", serverConf.ListenPort))
+	e.Logger.Fatal(
+		e.Start(
+			fmt.Sprintf("%s:%d", serverConf.ListenAddr, serverConf.ListenPort)))
 }

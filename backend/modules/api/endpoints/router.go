@@ -3,7 +3,7 @@ package endpoints
 import (
 	"backend/modules/api/endpoints/messages"
 	"backend/modules/api/endpoints/stats"
-	"backend/ws"
+	"backend/x/ws"
 	"fmt"
 	"time"
 
