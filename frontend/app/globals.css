@@ -1,138 +1,17 @@
-* {
-  border: box;
+@import url('https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.nav-button {
+  @apply rounded py-2 px-4 w-28 bg-gradient-to-t from-indigo-500 to-blue-800 hover:hue-rotate-30 focus:ring-4 focus:outline-none focus:ring-purple-200
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  direction: rtl;
-  color: #ffffff;
-  background-color: #3b0754;
+.social-button {
+  @apply rounded-xl flex gap-6 items-center py-2 px-4 rounded bg-black hover:bg-indigo-800
 }
 
-.section {
-  margin: 2rem;
-}
-
-.main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.header-main {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  align-items: center;
-  height: 5.5rem;
-}
-
-.header-main-logo {
-  width: 5.2rem;
-  height: 5.2rem;
-}
-
-.header-main-title {
-  font-size: 4rem;
-  font-weight: bold;
-}
-
-.nav {
-  height: 3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.nav-items {
-  list-style: none;
-  display: flex;
-}
-
-.nav-items > li {
-  font-weight: bold;
-  padding: 0.2rem 1.6rem;
-  font-size: 1.6rem;
-  border-radius: 1rem;
-}
-
-.nav-items > li:hover {
-  background-color: black;
-}
-
-.hero {
-  margin-top: 2rem;
-  font-size: 2rem;
-}
-
-.hero-list {
-  list-style: none;
-  align-items: center;
-  text-align: center;
-}
-
-.stats {
-  margin-top: 3rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  max-width: 60%;
-}
-
-.stats-number {
-  color: greenyellow;
-  font-weight: bold;
-}
-
-.stats-link {
-  text-decoration: none;
-  color: lightskyblue;
-  font-weight: bold;
-}
-
-.stats-github {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.stats-github-logo {
-  width: 2.3rem;
-  height: 2.3rem;
-}
-
-.stats-social-list {
-  display: flex;
-  list-style: none;
-}
-
-.stats-social-item {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-.stats-social-item-list {
-  list-style: none;
-  max-width: 100%;
-}
-
-.stats-social-item-list > li {
-  max-width: 100%;
-}
-
-.stats-social-link {
-  display: inline-block;
-  max-width: 20%;
-  max-height: 100%;
-}
-
-.stats-social-logo {
-  width: auto;
-  height: auto;
-  max-width: 80%;
+.responsive-flex {
+  @apply flex xl:flex-row 2xl:gap-x-0 gap-x-20 2xl:gap-y-0 gap-y-8 flex-col xl:items-center 
 }

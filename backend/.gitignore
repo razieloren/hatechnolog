@@ -1,6 +1,7 @@
 venv/
 out/
+modules/x/messages
 modules/api/endpoints/messages
 modules/api/artifacts
-config.yaml
-deploy.yaml
+config*.yaml
+deploy*.yaml

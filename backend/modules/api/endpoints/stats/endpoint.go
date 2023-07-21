@@ -1,36 +1,28 @@
 package stats
 
 import (
-	"backend/modules/api/endpoints/messages"
-	"backend/x/ws"
-	"fmt"
-	"time"
+	"backend/modules/api/endpoints/messages/stats"
 
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
-func EndpointLatestStatsPush(logger *zap.Logger, dbConn *gorm.DB, ws *ws.WS, pushInterval time.Duration) error {
-	wrappedMessage, err := ws.ReadWrappedMessage()
+func EndpointLatestStats(dbConn *gorm.DB, logger *zap.Logger, request *stats.LatestStatsRequest) *stats.LatestStatsResponse {
+	discordStats, err := fetchDiscordLatestStats(dbConn, request.DiscordGuild)
 	if err != nil {
-		return fmt.Errorf("read_wrapped_message: %w", err)
+		logger.Error("Error fetching Discord latest stats", zap.String("guild_name", request.DiscordGuild), zap.Error(err))
 	}
-	pushRequestWrapped, ok := wrappedMessage.Message.(*messages.Wrapper_LatestStatsPushRequest)
-	if !ok {
-		return fmt.Errorf("Bad message type received")
+	youtubeStats, err := fetchYoutubeLatestStats(dbConn, request.YoutubeChannel)
+	if err != nil {
+		logger.Error("Error fetching Youtube latest stats", zap.String("channel_name", request.YoutubeChannel), zap.Error(err))
 	}
-	request := pushRequestWrapped.LatestStatsPushRequest
-
-	for {
-		response := handleLatestStatsPushRequest(logger, dbConn, request)
-		wrappedResponse := &messages.Wrapper{
-			Message: &messages.Wrapper_LatestStatsPushResponse{
-				LatestStatsPushResponse: response,
-			},
-		}
-		if err := ws.WriteWrappedMessage(wrappedResponse); err != nil {
-			return fmt.Errorf("write_wrapped_message: %w", err)
-		}
-		time.Sleep(pushInterval)
+	githubStats, err := fetchGithubLatestStats(dbConn, request.GithubRepo)
+	if err != nil {
+		logger.Error("Error fetching Github latest stats", zap.String("repo_name", request.GithubRepo), zap.Error(err))
+	}
+	return &stats.LatestStatsResponse{
+		DiscordStats: discordStats,
+		YoutubeStats: youtubeStats,
+		GithubStats:  githubStats,
 	}
 }

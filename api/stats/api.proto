@@ -5,13 +5,13 @@ option go_package = "backend/modules/api/endpoints/messages/stats";
 
 import "stats/helpers.proto";
 
-message LatestStatsPushRequest {
+message LatestStatsRequest {
     string discord_guild = 1;
     string youtube_channel = 2;
     string github_repo = 3;
 }
 
-message LatestStatsPushResponse {
+message LatestStatsResponse {
     LatestDiscordStats discord_stats = 1;
     LatestYoutubeStats youtube_stats = 2;
     LatestGithubStats github_stats = 3;

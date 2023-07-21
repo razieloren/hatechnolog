@@ -12,12 +12,14 @@ Shared messages between the backend and the frontend, basef on Google's RPC - `p
 - To make sure that everything works, in this folder run `make all` and observe the results - All the messages should have been compiled successfully with no errors or warnings.
 
 ## Directory Tree
-- `wrapper.proto` - Defines wrapper messages for all API requests & responses, and defines the API endpoints inetens.
+- `wrapper.proto` - Defines wrapper messages for all API requests & responses, and defines the various cookies values used by the modules.
 - `[ENDPOINT_NAME]` - Indicates an endpoint.
     - `api.proto` - Requests & Responses to the API
     - `helpers.proto` - Helper messages that the API messages may use.
 
 ## Adding New Messages
+
+The `backend.proto` file is for messages which should be defined only for the backend, and are accessible as part of `x` library.
 
 ### To an Existing Endpoint
 

@@ -1,0 +1,14 @@
+syntax = "proto3";
+package messages;
+
+option go_package = "backend/x/messages";
+
+message UserSessionCookieValue {
+    string handle = 1;
+    string token = 2;
+}
+
+message EncryptedCookieValue {
+    bytes iv = 1;
+    bytes enc_message = 2;
+}

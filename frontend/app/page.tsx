@@ -1,18 +1,12 @@
-import Header from "./components/Header"
-import { Alef } from "next/font/google"
-import Navbar from "./components/Navbar"
-import LatestStats from "./components/LatestStats"
-import Hero from "./components/Hero"
+import Header from "@/components/header/Header"
+import Navbar from "@/components/header/Navbar"
+import LatestStats from "@/components/footer/Social"
+import Hero from "@/components/Hero"
 
-const ALEF_FONT = Alef({subsets: ['hebrew'], weight: '400'})
+export const revalidate = 300;
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className={`main ${ALEF_FONT.className}`}>
-      <Header/>
-      <Navbar/>
-      <Hero/>
-      <LatestStats/>
-    </main>
+    <Hero/>
   )
 }
