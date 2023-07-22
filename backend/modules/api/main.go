@@ -15,6 +15,7 @@ import (
 
 	"github.com/brpaz/echozap"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/ravener/discord-oauth2"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
@@ -36,9 +37,9 @@ type Config struct {
 		Server string `yaml:"server"`
 	} `yaml:"api_token"`
 	Auth struct {
-		FinalRedirect string           `yaml:"final_redirect"`
-		SessionCookie web.CookieConfig `yaml:"session_cookie"`
-		Oauth2        struct {
+		RedirectHost   string                   `yaml:"redirect_host"`
+		SessionCookies web.SessionCookiesConfig `yaml:"session_cookies"`
+		Oauth2         struct {
 			StateCookie web.CookieConfig `yaml:"state_cookie"`
 			Config      struct {
 				Discord auth.Oauth2ProviderConf `yaml:"discord"`
@@ -84,28 +85,44 @@ func main() {
 	e.HideBanner = true
 	e.Use(echozap.ZapLogger(logger))
 
+	// TODO: move to config
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins:     []string{"http://127.0.0.1:3000"},
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowMethods:     []string{echo.POST, echo.OPTIONS},
+		AllowCredentials: true,
+	}))
+
 	// Registering RPC endpoints.
-	router := endpoints.NewRouter(logger, dbConn, config.ApiToken.Server, config.ApiToken.Client)
-	rpcGroup := e.Group("/rpc", router.ExtractRPCMessage)
-	rpcGroup.POST("/server", router.RPCServer)
-	rpcGroup.POST("/client", router.RPCClient)
+	router := endpoints.NewRouter(dbConn, serverIdentity, &config.Auth.SessionCookies)
+	rpcGroup := e.Group("/rpc")
+	rpcGroup.POST("/server",
+		router.PublicRPCServer,
+		router.RPCCommunicationWrapper(config.ApiToken.Server))
+	rpcGroup.POST("/client",
+		router.PublicRPCServer,
+		router.RPCCommunicationWrapper(config.ApiToken.Client))
+	rpcAuthGroup := rpcGroup.Group("/private", router.SessionMiddleware)
+	rpcAuthGroup.POST("/server",
+		router.PrivateRPCServer,
+		router.RPCCommunicationWrapper(config.ApiToken.Server))
+	rpcAuthGroup.POST("/client",
+		router.PrivateRPCClient,
+		router.RPCCommunicationWrapper(config.ApiToken.Client))
 
 	// Registering auth endpoints.
 	authGroup := e.Group("/auth")
-	authGroup.POST("/logout", func(c echo.Context) error {
-		// TODO: delete session here.
+	authGroup.GET("/logout", func(c echo.Context) error {
 		var session models.Session
-		_, err := session.FromEcho(dbConn, serverIdentity, &config.Auth.SessionCookie, c)
+		_, err := session.FromEcho(dbConn, serverIdentity, &config.Auth.SessionCookies, c)
 		if err == nil {
-			// This is a valid session so we need to invalidate it.
-			c.SetCookie(web.DeleteCookie(config.Auth.SessionCookie.Name))
+			config.Auth.SessionCookies.Delete(c)
 			// This might return an error but we have nothing to do here.
 			session.Invalidate(dbConn)
 		}
-
-		return c.Redirect(http.StatusTemporaryRedirect, config.Auth.FinalRedirect)
+		return c.Redirect(http.StatusTemporaryRedirect, config.Auth.RedirectHost+c.QueryParam("return"))
 	})
-	auth.InstallOauth2Provider(authGroup, logger, dbConn, serverIdentity,
+	auth.InstallOauth2Provider(authGroup, dbConn, serverIdentity,
 		&oauth2.Config{
 			RedirectURL:  config.Auth.Oauth2.Config.Discord.RedirectUrl,
 			ClientID:     config.Auth.Oauth2.Config.Discord.ClientId,
@@ -113,10 +130,10 @@ func main() {
 			Scopes:       config.Auth.Oauth2.Config.Discord.Scopes,
 			Endpoint:     discord.Endpoint,
 		}, hooks.DiscordHooks{
-			SessionCookieConf: &config.Auth.SessionCookie,
-			Config:            &config.Auth.Oauth2.Hooks.Discord,
-		}, &config.Auth.Oauth2.StateCookie, &config.Auth.SessionCookie, config.Auth.FinalRedirect)
-	auth.InstallOauth2Provider(authGroup, logger, dbConn, serverIdentity,
+			SessionCookies: &config.Auth.SessionCookies,
+			Config:         &config.Auth.Oauth2.Hooks.Discord,
+		}, &config.Auth.Oauth2.StateCookie, &config.Auth.SessionCookies, config.Auth.RedirectHost)
+	auth.InstallOauth2Provider(authGroup, dbConn, serverIdentity,
 		&oauth2.Config{
 			RedirectURL:  config.Auth.Oauth2.Config.Github.RedirectUrl,
 			ClientID:     config.Auth.Oauth2.Config.Github.ClientId,
@@ -128,8 +145,8 @@ func main() {
 				AuthStyle: oauth2.AuthStyleInParams,
 			},
 		}, hooks.GithubHooks{
-			SessionCookieConf: &config.Auth.SessionCookie,
-		}, &config.Auth.Oauth2.StateCookie, &config.Auth.SessionCookie, config.Auth.FinalRedirect)
+			SessionCookies: &config.Auth.SessionCookies,
+		}, &config.Auth.Oauth2.StateCookie, &config.Auth.SessionCookies, config.Auth.RedirectHost)
 
 	serverConf := &config.Server
 	if config.TLSConfigured() {

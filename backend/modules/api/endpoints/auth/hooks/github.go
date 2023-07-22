@@ -11,7 +11,7 @@ import (
 )
 
 type GithubHooks struct {
-	SessionCookieConf *web.CookieConfig
+	SessionCookies *web.SessionCookiesConfig
 }
 
 func (githubHooks GithubHooks) Name() string {

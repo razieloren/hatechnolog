@@ -56,16 +56,16 @@ func (permission *Permission) FromPermissionString(dbConn *gorm.DB, permissionSt
 	var resource Resource
 	if err := dbConn.Where(
 		&Resource{Name: resourceName}).Take(&resource).Error; err != nil {
-		return fmt.Errorf("error fetching resource named %s", resourceName)
+		return fmt.Errorf("take resource: %w", err)
 	}
 	var accessType AccessType
 	if err := dbConn.Where(
 		&AccessType{Name: accessTypeName}).Take(&accessType).Error; err != nil {
-		return fmt.Errorf("error fetching access type named %s", accessTypeName)
+		return fmt.Errorf("take access type: %w", err)
 	}
 	if err := dbConn.Where(
 		&Permission{ResourceID: resource.ID, AccessTypeID: accessType.ID}).Take(permission).Error; err != nil {
-		return fmt.Errorf("no permission %d:%d", resource.ID, accessType.ID)
+		return fmt.Errorf("take permission: %w", err)
 	}
 	return nil
 }

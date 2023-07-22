@@ -1,0 +1,30 @@
+syntax = "proto3";
+package messages;
+
+option go_package = "backend/modules/api/endpoints/messages/user";
+
+import "google/protobuf/timestamp.proto";
+
+message GetUserRequest {
+    optional string handle = 1;
+}
+
+message GetUserResponse {
+    // Returns in every request, public data.
+    string handle = 1;
+    uint32 karma = 2;
+    string plan = 3;
+    string avatar_url = 4;
+    google.protobuf.Timestamp plan_since = 5;
+    google.protobuf.Timestamp member_since = 6;
+    bool is_supporter = 7;
+    bool is_vip = 8;
+    optional string github_username = 9;
+
+    // Returns only for authenticated user, private data.
+    optional google.protobuf.Timestamp tac_acceptance_date = 10;
+    optional bool allow_marketing_emails = 11;
+    optional bool allow_weekly_digest_emails = 12;
+    optional bool mfa_enabled = 13;
+    optional bool email_verified = 14;
+}

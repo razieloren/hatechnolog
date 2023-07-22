@@ -3,9 +3,21 @@
 I don't really know JS so help me out here.
 
 ## Required variables in `.env`
-- `API_WS_URL`: Backend websocket API URL.
-- `MAIN_REPO_URL`: Main Github repository URL.
-- `MAIN_REPO_COMMITS_URL`: Main Github repository commits URL.
-- `MAIN_REPO_CONTRIBUTORS_URL`: Main Github repository contributors URL.
-- `DISCORD_INVITE_URL`: Discord channel invite URL.
-- `YOUTUBE_CHANNEL_URL`: Youtube channel URL.
+
+- `AUTH_API_URL`
+- `SERVER_RPC_API_URL`
+- `CLIENT_RPC_API_URL`
+- `CLIENT_RPC_API_TOKEN`
+- `SERVER_RPC_API_TOKEN`
+- `SESSION_FLAG_COOKIE_NAME`
+- `DISCORD_GUILD_NAME`
+- `YOUTUBE_CHANNEL_NAME`
+- `GITHUB_REPO_NAME`
+- `MAIN_REPO_URL`
+- `MAIN_REPO_COMMITS_URL`
+- `MAIN_REPO_CONTRIBUTORS_URL`
+- `DISCORD_INVITE_URL`
+- `DISCORD_MEMBER_JOIN_URL`
+- `YOUTUBE_CHANNEL_URL`
+- `YOUTUBE_MEMBER_JOIN_URL`
+- `TWITTER_PROFILE_URL`

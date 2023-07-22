@@ -1,94 +1,112 @@
 package endpoints
 
 import (
+	"backend/modules/api/endpoints/auth/models"
 	"backend/modules/api/endpoints/messages"
 	"backend/modules/api/endpoints/stats"
+	"backend/modules/api/endpoints/user"
+	"backend/x/identity"
 	"backend/x/web"
 	"io"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 	"gorm.io/gorm"
 )
 
 const (
-	requestMessageKey = "rpc_message"
+	sessionUserKey    = "session_user"
+	messageRequestKey = "message_request"
 )
 
 type Router struct {
-	logger         *zap.Logger
 	dbConn         *gorm.DB
-	serverApiToken string
-	clientApiToken string
+	identity       *identity.Identity
+	sessionCookies *web.SessionCookiesConfig
 }
 
-func NewRouter(logger *zap.Logger, dbConn *gorm.DB, serverApiToken, clientApiToken string) *Router {
+func NewRouter(dbConn *gorm.DB, identity *identity.Identity,
+	sessionCookies *web.SessionCookiesConfig) *Router {
 	return &Router{
-		logger:         logger,
 		dbConn:         dbConn,
-		serverApiToken: serverApiToken,
-		clientApiToken: clientApiToken,
+		identity:       identity,
+		sessionCookies: sessionCookies,
 	}
 }
 
-func (router *Router) ExtractRPCMessage(next echo.HandlerFunc) echo.HandlerFunc {
+func (router *Router) RPCCommunicationWrapper(apiToken string) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			// Reading wrapped request.
+			data, err := io.ReadAll(c.Request().Body)
+			if err != nil {
+				c.Logger().Error("Reading request data failed: ", err)
+				return web.GenerateInternalServerError()
+			}
+			wrappedRequest := &messages.Wrapper{}
+			if err := proto.Unmarshal(data, wrappedRequest); err != nil {
+				c.Logger().Warn("Unmarshaling request message failed: ", err)
+				return web.GenerateError(c, http.StatusBadRequest, messages.ErrorCode_GENERAL)
+			}
+
+			// Validating API token.
+			if wrappedRequest.ApiToken == nil || wrappedRequest.GetApiToken() != apiToken {
+				c.Logger().Error("API token mismatch in client request")
+				return web.GenerateError(c, http.StatusBadRequest, messages.ErrorCode_GENERAL)
+			}
+			c.Set(messageRequestKey, wrappedRequest)
+			return next(c)
+		}
+	}
+}
+
+func (router *Router) SessionMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		data, err := io.ReadAll(c.Request().Body)
+		var session models.Session
+		user, err := session.FromEcho(router.dbConn, router.identity, router.sessionCookies, c)
 		if err != nil {
-			router.logger.Error("Could not read request data", zap.Error(err))
-			return web.StatusBadRequest
+			c.Logger().Error("Failed validating session: ", err)
+			return web.GenerateError(c, http.StatusUnauthorized, messages.ErrorCode_GENERAL)
 		}
-		wrappedRequest := &messages.Wrapper{}
-		if err := proto.Unmarshal(data, wrappedRequest); err != nil {
-			router.logger.Error("Could not unmarshal wrapped message", zap.Error(err))
-			return web.StatusBadRequest
-		}
-		c.Set(requestMessageKey, wrappedRequest)
+		c.Set(sessionUserKey, user)
 		return next(c)
 	}
 }
 
-func (router *Router) RPCClient(c echo.Context) error {
-	wrappedRequest, ok := c.Get(requestMessageKey).(*messages.Wrapper)
-	if !ok {
-		router.logger.Error("Cannot convert message to wrapper")
-		return web.StatusBadRequest
-	}
-	if wrappedRequest.ApiToken != router.clientApiToken {
-		router.logger.Error("Bad client API token")
-		return web.StatusUnauthorized
-	}
-	return c.String(http.StatusAccepted, "empty")
+func (router *Router) PublicRPCClient(c echo.Context) error {
+	c.Logger().Error("Unknown public RPC client message type")
+	return web.GenerateError(c, http.StatusBadRequest, messages.ErrorCode_GENERAL)
 }
 
-func (router *Router) RPCServer(c echo.Context) error {
-	wrappedRequest, ok := c.Get(requestMessageKey).(*messages.Wrapper)
-	if !ok {
-		router.logger.Error("Cannot convert message to wrapper")
-		return web.StatusBadRequest
-	}
-	if wrappedRequest.ApiToken != router.serverApiToken {
-		router.logger.Error("Bad server API token")
-		return web.StatusBadRequest
-	}
-
-	wrappedResponse := &messages.Wrapper{}
-	switch request := wrappedRequest.Message.(type) {
+func (router *Router) PublicRPCServer(c echo.Context) error {
+	request := c.Get(messageRequestKey).(*messages.Wrapper)
+	switch request := request.Message.(type) {
 	case *messages.Wrapper_LatestStatsRequest:
-		response := stats.EndpointLatestStats(router.dbConn, router.logger, request.LatestStatsRequest)
-		wrappedResponse.Message = &messages.Wrapper_LatestStatsResponse{
-			LatestStatsResponse: response,
-		}
-	default:
-		router.logger.Error("Unknown server message type")
-		return web.StatusBadRequest
+		return stats.EndpointLatestStats(router.dbConn, c, request.LatestStatsRequest)
 	}
-	responseData, err := proto.Marshal(wrappedResponse)
-	if err != nil {
-		router.logger.Error("Could not marshal message", zap.Error(err))
-		return web.StatusInternalServerError
+	c.Logger().Error("Unknown public RPC server message type")
+	return web.GenerateError(c, http.StatusBadRequest, messages.ErrorCode_GENERAL)
+}
+
+func (router *Router) PrivateRPCClient(c echo.Context) error {
+	request := c.Get(messageRequestKey).(*messages.Wrapper)
+	sessionUser := c.Get(sessionUserKey).(*models.User)
+	switch request := request.Message.(type) {
+	case *messages.Wrapper_GetUserRequest:
+		return user.EndpointClientGetUser(router.dbConn, c, sessionUser, request.GetUserRequest)
 	}
-	return c.Blob(http.StatusOK, "application/octet-stream", responseData)
+	c.Logger().Error("Unknown private RPC client message type")
+	return web.GenerateError(c, http.StatusBadRequest, messages.ErrorCode_GENERAL)
+}
+
+func (router *Router) PrivateRPCServer(c echo.Context) error {
+	request := c.Get(messageRequestKey).(*messages.Wrapper)
+	sessionUser := c.Get(sessionUserKey).(*models.User)
+	switch request := request.Message.(type) {
+	case *messages.Wrapper_GetUserRequest:
+		return user.EndpointServerGetUser(router.dbConn, c, sessionUser, request.GetUserRequest)
+	}
+	c.Logger().Error("Unknown private RPC server message type")
+	return web.GenerateError(c, http.StatusBadRequest, messages.ErrorCode_GENERAL)
 }

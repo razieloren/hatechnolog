@@ -8,6 +8,11 @@ message UserSessionCookieValue {
     string token = 2;
 }
 
+message LoginStateCookieValue {
+    bytes state = 1;
+    string redirect_to = 2;
+}
+
 message EncryptedCookieValue {
     bytes iv = 1;
     bytes enc_message = 2;

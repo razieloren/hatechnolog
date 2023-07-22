@@ -47,7 +47,7 @@ func (discordUser *DiscordUser) checkGuildMembership(client *discordgo.Session, 
 		afterId := ""
 		apiUsersGuilds, err := client.UserGuilds(maxUserGuildsPerRequest, "", afterId)
 		if err != nil {
-			return fmt.Errorf("error fetching user guilds, after='%s', err=%w", afterId, err)
+			return fmt.Errorf("user guilds: %w", err)
 		}
 		for _, apiUserGuild := range apiUsersGuilds {
 			if apiUserGuild.ID == guildID {
@@ -66,7 +66,7 @@ func (discordUser *DiscordUser) checkGuildMembership(client *discordgo.Session, 
 func (discordUser *DiscordUser) checkRoleStatus(client *discordgo.Session, guildID, supporterRoleID, VIPRoleID string) error {
 	memberApi, err := client.UserGuildMember(guildID)
 	if err != nil {
-		return fmt.Errorf("error fetching guild member: %w", err)
+		return fmt.Errorf("user guild member: %w", err)
 	}
 	if memberApi.Avatar != "" {
 		avatarUrl := memberApi.AvatarURL(avatarSize)
@@ -87,23 +87,23 @@ func (discordUser *DiscordUser) FromAPI(dbConn *gorm.DB, config *oauth2.Config, 
 		dbConn, config, func(client *http.Client) error {
 			discordClient, err := discordgo.New("")
 			if err != nil {
-				return fmt.Errorf("new discord client: %w", err)
+				return fmt.Errorf("new discord: %w", err)
 			}
 			discordClient.Client = client
 			apiUser, err := discordClient.User("@me")
 			if err != nil {
-				return fmt.Errorf("get discord @me: %w", err)
+				return fmt.Errorf("user: %w", err)
 			}
 			if err := dbConn.Where(&DiscordUser{
 				DiscordID: apiUser.ID,
 			}).Take(discordUser).Error; err != nil {
 				if !errors.Is(err, gorm.ErrRecordNotFound) {
-					return fmt.Errorf("error fetching old discord user: %w", err)
+					return fmt.Errorf("take discord user: %w", err)
 				}
 			} else {
 				// This user has been here before, we need to delete his old token.
 				if err := dbConn.Delete(&OAuth2Token{}, discordUser.OAuth2TokenID).Error; err != nil {
-					return fmt.Errorf("error deleting olad oauth2 token: %w", err)
+					return fmt.Errorf("delete oauth2: %w", err)
 				}
 				// All the other values will be updated from the API.
 			}
@@ -127,18 +127,18 @@ func (discordUser *DiscordUser) FromAPI(dbConn *gorm.DB, config *oauth2.Config, 
 				}
 			}
 			if err := dbConn.Save(discordUser).Error; err != nil {
-				return fmt.Errorf("error saving discord user to the DB: %w", err)
+				return fmt.Errorf("save discord user: %w", err)
 			}
 			return nil
 		})
 	if cbError != nil {
-		return fmt.Errorf("main discord cb failed: %w", cbError)
+		return fmt.Errorf("cb: %w", cbError)
 	}
 	if newTokenError != nil {
-		return fmt.Errorf("new discord token error: %w", newTokenError)
+		return fmt.Errorf("new token: %w", newTokenError)
 	}
 	if saveTokenError != nil {
-		return fmt.Errorf("save discord token error: %w", newTokenError)
+		return fmt.Errorf("save token: %w", newTokenError)
 	}
 	return nil
 }

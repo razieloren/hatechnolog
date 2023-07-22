@@ -18,7 +18,7 @@ func fetchDiscordLatestStats(dbConn *gorm.DB, guildName string) (*stats.LatestDi
 	}).Last(&record).Error; err != nil {
 		return &stats.LatestDiscordStats{
 			Valid: false,
-		}, fmt.Errorf("Select discord_guild_stats: %w", err)
+		}, fmt.Errorf("last guild stats: %w", err)
 	}
 	return &stats.LatestDiscordStats{
 		TotalMembers:         uint32(record.TotalHumans),
@@ -37,7 +37,7 @@ func fetchYoutubeLatestStats(dbConn *gorm.DB, channelName string) (*stats.Latest
 	}).Last(&record).Error; err != nil {
 		return &stats.LatestYoutubeStats{
 			Valid: false,
-		}, fmt.Errorf("Select youtube_channel_stats: %w", err)
+		}, fmt.Errorf("last channel stats: %w", err)
 	}
 	return &stats.LatestYoutubeStats{
 		Subscribers: record.Subscribers,
@@ -54,7 +54,7 @@ func fetchGithubLatestStats(dbConn *gorm.DB, repoName string) (*stats.LatestGith
 	}).Last(&record).Error; err != nil {
 		return &stats.LatestGithubStats{
 			Valid: false,
-		}, fmt.Errorf("Select github_repo_stats: %w", err)
+		}, fmt.Errorf("last repo stats: %w", err)
 	}
 	return &stats.LatestGithubStats{
 		Contributors: record.Contributors,

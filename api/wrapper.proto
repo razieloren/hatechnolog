@@ -4,11 +4,25 @@ package messages;
 option go_package = "backend/modules/api/endpoints/messages";
 
 import "stats/api.proto";
+import "user/api.proto";
+
+// Error codes that are sent to the frontend, should not expose sensitive info.
+enum ErrorCode {
+    GENERAL = 0;
+    NOT_FOUND = 1;
+}
+
+message Error {
+    ErrorCode error_code = 1;
+}
 
 message Wrapper {
-    string api_token = 1;
+    optional string api_token = 1;
     oneof message {
-        LatestStatsRequest latest_stats_request = 2;
-        LatestStatsResponse latest_stats_response = 3;
+        Error error_response = 2;
+        LatestStatsRequest latest_stats_request = 3;
+        LatestStatsResponse latest_stats_response = 4;
+        GetUserRequest get_user_request = 5;
+        GetUserResponse get_user_response = 6;
     }
 }

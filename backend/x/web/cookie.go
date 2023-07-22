@@ -41,13 +41,14 @@ func CreateCookie(config *CookieConfig, value []byte) (*http.Cookie, error) {
 		Domain:   config.Domain,
 		Secure:   config.Secure,
 		HttpOnly: config.HttpOnly,
+		SameSite: http.SameSiteNoneMode,
 	}, nil
 }
 
 func ParseCookieValue(value string) ([]byte, error) {
 	byteValue, err := base64.URLEncoding.DecodeString(value)
 	if err != nil {
-		return nil, fmt.Errorf("base64_decode: %w", err)
+		return nil, fmt.Errorf("base64 decode: %w", err)
 	}
 	return byteValue, nil
 }
@@ -59,7 +60,7 @@ func CreateEncryptedCookie(config *CookieConfig, identity *identity.Identity, va
 	}
 	iv, enc, err := identity.GCMAESEncrypt(value)
 	if err != nil {
-		return nil, fmt.Errorf("gcm_encrypt: %w", err)
+		return nil, fmt.Errorf("gcm encrypt: %w", err)
 	}
 	serializedVal, err := proto.Marshal(&messages.EncryptedCookieValue{
 		Iv:         iv,
@@ -76,13 +77,14 @@ func CreateEncryptedCookie(config *CookieConfig, identity *identity.Identity, va
 		Domain:   config.Domain,
 		Secure:   config.Secure,
 		HttpOnly: config.HttpOnly,
+		SameSite: http.SameSiteNoneMode,
 	}, nil
 }
 
 func ParseEncryptedCookieValue(identity *identity.Identity, value string) ([]byte, error) {
 	serializedMessage, err := base64.URLEncoding.DecodeString(value)
 	if err != nil {
-		return nil, fmt.Errorf("base64_decode: %w", err)
+		return nil, fmt.Errorf("base 64 decode: %w", err)
 	}
 	encValueMessage := messages.EncryptedCookieValue{}
 	if err := proto.Unmarshal(serializedMessage, &encValueMessage); err != nil {
@@ -90,7 +92,7 @@ func ParseEncryptedCookieValue(identity *identity.Identity, value string) ([]byt
 	}
 	plain, err := identity.GCMAESDecrypt(encValueMessage.Iv, encValueMessage.EncMessage)
 	if err != nil {
-		return nil, fmt.Errorf("gcm_decrypt: %w", err)
+		return nil, fmt.Errorf("gcm decrypt: %w", err)
 	}
 	return plain, nil
 }

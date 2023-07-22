@@ -1,4 +1,4 @@
-import { ServerRPCRequest } from "./rpc";
+import { ServerPublicRPCRequest } from "./rpc";
 import {messages as wrapper} from '@/messages/wrapper'
 import {messages as stats_api} from '@/messages/stats/api'
 import {messages as stats_helpers} from '@/messages/stats/helpers'
@@ -11,7 +11,7 @@ export type StatsProps = {
 }
 
 export async function FetchLatestStats(): Promise<StatsProps> {
-    const wrappedResponse = await ServerRPCRequest(new wrapper.Wrapper({
+    const wrappedResponse = await ServerPublicRPCRequest(new wrapper.Wrapper({
         latest_stats_request: new stats_api.LatestStatsRequest({
             discord_guild: process.env.DISCORD_GUILD_NAME!,
             youtube_channel: process.env.YOUTUBE_CHANNEL_NAME!,

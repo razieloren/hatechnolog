@@ -37,43 +37,43 @@ func (session *Session) Invalidate(dbConn *gorm.DB) error {
 	return dbConn.Delete(session).Error
 }
 
-func (session *Session) FromEcho(dbConn *gorm.DB, identity *identity.Identity, cookieConf *web.CookieConfig, c echo.Context) (*User, error) {
-	sessionCookie, err := c.Cookie(cookieConf.Name)
+func (session *Session) FromEcho(dbConn *gorm.DB, identity *identity.Identity, cookies *web.SessionCookiesConfig, c echo.Context) (*User, error) {
+	sessionCookie, err := cookies.Get(c)
 	if err != nil {
-		return nil, fmt.Errorf("request does not contain a session cookie: %w", err)
+		return nil, fmt.Errorf("no session cookie: %w", err)
 	}
 	value, err := web.ParseEncryptedCookieValue(identity, sessionCookie.Value)
 	if err != nil {
 		// Malformed cookie, mark to delete.
-		c.SetCookie(web.DeleteCookie(cookieConf.Name))
-		return nil, fmt.Errorf("error parsing session cookie value: %w", err)
+		cookies.Delete(c)
+		return nil, fmt.Errorf("parse encrypted cookie: %w", err)
 	}
 	userSession := messages.UserSessionCookieValue{}
 	if err := proto.Unmarshal(value, &userSession); err != nil {
 		// Malformed cookie, mark to delete.
-		c.SetCookie(web.DeleteCookie(cookieConf.Name))
-		return nil, fmt.Errorf("error unmrashaling session value: %w", err)
+		cookies.Delete(c)
+		return nil, fmt.Errorf("unmarshal: %w", err)
 	}
 	if err := dbConn.Where(&Session{
 		Token: userSession.Token,
 	}).Take(session).Error; err != nil {
-		c.SetCookie(web.DeleteCookie(cookieConf.Name))
+		cookies.Delete(c)
 		return nil, fmt.Errorf("no such session: %w", err)
 	}
 	if session.HasExpired() {
 		// This session os not relevant anymore since it has expired.
 		if err := session.Invalidate(dbConn); err != nil {
-			return nil, fmt.Errorf("error invalidating session: %w", err)
+			return nil, fmt.Errorf("invalidate: %w", err)
 		}
-		c.SetCookie(web.DeleteCookie(cookieConf.Name))
+		cookies.Delete(c)
 		return nil, fmt.Errorf("session expired")
 	}
 	var user User
 	if err := dbConn.Take(&user, session.UserID).Error; err != nil {
-		return nil, fmt.Errorf("error fetching user: %w", err)
+		return nil, fmt.Errorf("no such user: %w", err)
 	}
 	if user.Handle != userSession.Handle {
-		return nil, fmt.Errorf("mismatching cookie and session user")
+		return nil, fmt.Errorf("bad session handle")
 	}
 	return &user, nil
 }

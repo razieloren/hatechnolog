@@ -18,14 +18,22 @@ config:
     client: STRING
     server: STRING
   auth:
-    final_redirect: STRING
-    session_cookie:
-      name: STRING
-      expiry_time_sec: INTEGER
-      path: STRING
-      domain: STRING
-      secure: BOOL
-      http_only: BOOL
+    redirect_host: STRING
+    session_cookies:
+      session:
+        name: STRING
+        expiry_time_sec: INTEGER
+        path: STRING
+        domain: STRING
+        secure: BOOL
+        http_only: BOOL
+      session_flag:
+        name: STRING
+        expiry_time_sec: INTEGER
+        path: STRING
+        domain: STRING
+        secure: BOOL
+        http_only: BOOL
     oauth2:
       state_cookie:
         name: STRING

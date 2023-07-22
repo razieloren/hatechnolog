@@ -47,7 +47,7 @@ func CreateDefaultData(dbConn *gorm.DB) error {
 		}
 		for _, resource := range resources {
 			if err := tx.FirstOrCreate(resource, &Resource{Name: resource.Name}).Error; err != nil {
-				return fmt.Errorf("error creating default resources: %w", err)
+				return fmt.Errorf("default resources: %w", err)
 			}
 		}
 
@@ -80,7 +80,7 @@ func CreateDefaultData(dbConn *gorm.DB) error {
 		}
 		for _, accessType := range accessTypes {
 			if err := tx.FirstOrCreate(accessType, &AccessType{Name: accessType.Name}).Error; err != nil {
-				return fmt.Errorf("error creating default access types: %w", err)
+				return fmt.Errorf("default access types: %w", err)
 			}
 		}
 
@@ -136,7 +136,7 @@ func CreateDefaultData(dbConn *gorm.DB) error {
 		}
 		for _, permission := range permissions {
 			if err := tx.FirstOrCreate(permission, &Permission{ResourceID: permission.ResourceID, AccessTypeID: permission.AccessTypeID}).Error; err != nil {
-				return fmt.Errorf("error creating default permissions: %w", err)
+				return fmt.Errorf("default permissions: %w", err)
 			}
 		}
 
@@ -173,7 +173,7 @@ func CreateDefaultData(dbConn *gorm.DB) error {
 		}
 		for _, role := range roles {
 			if err := tx.FirstOrCreate(role, &Role{Name: role.Name}).Error; err != nil {
-				return fmt.Errorf("error creating default roles: %w", err)
+				return fmt.Errorf("default roles: %w", err)
 			}
 		}
 
@@ -196,7 +196,7 @@ func CreateDefaultData(dbConn *gorm.DB) error {
 		}
 		for _, plan := range plans {
 			if err := tx.FirstOrCreate(plan, &Plan{Name: plan.Name}).Error; err != nil {
-				return fmt.Errorf("error creating default plans: %w", err)
+				return fmt.Errorf("default plans: %w", err)
 			}
 		}
 

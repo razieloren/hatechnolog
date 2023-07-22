@@ -4,98 +4,47 @@
  * source: wrapper.proto
  * git: https://github.com/thesayyn/protoc-gen-ts */
 import * as dependency_1 from "./stats/api";
+import * as dependency_2 from "./user/api";
 import * as pb_1 from "google-protobuf";
 export namespace messages {
-    export class Wrapper extends pb_1.Message {
-        #one_of_decls: number[][] = [[2, 3]];
-        constructor(data?: any[] | ({
-            api_token?: string;
-        } & (({
-            latest_stats_request?: dependency_1.messages.LatestStatsRequest;
-            latest_stats_response?: never;
-        } | {
-            latest_stats_request?: never;
-            latest_stats_response?: dependency_1.messages.LatestStatsResponse;
-        })))) {
+    export enum ErrorCode {
+        GENERAL = 0,
+        NOT_FOUND = 1
+    }
+    export class Error extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {
+            error_code?: ErrorCode;
+        }) {
             super();
             pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
             if (!Array.isArray(data) && typeof data == "object") {
-                if ("api_token" in data && data.api_token != undefined) {
-                    this.api_token = data.api_token;
-                }
-                if ("latest_stats_request" in data && data.latest_stats_request != undefined) {
-                    this.latest_stats_request = data.latest_stats_request;
-                }
-                if ("latest_stats_response" in data && data.latest_stats_response != undefined) {
-                    this.latest_stats_response = data.latest_stats_response;
+                if ("error_code" in data && data.error_code != undefined) {
+                    this.error_code = data.error_code;
                 }
             }
         }
-        get api_token() {
-            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        get error_code() {
+            return pb_1.Message.getFieldWithDefault(this, 1, ErrorCode.GENERAL) as ErrorCode;
         }
-        set api_token(value: string) {
+        set error_code(value: ErrorCode) {
             pb_1.Message.setField(this, 1, value);
         }
-        get latest_stats_request() {
-            return pb_1.Message.getWrapperField(this, dependency_1.messages.LatestStatsRequest, 2) as dependency_1.messages.LatestStatsRequest;
-        }
-        set latest_stats_request(value: dependency_1.messages.LatestStatsRequest) {
-            pb_1.Message.setOneofWrapperField(this, 2, this.#one_of_decls[0], value);
-        }
-        get has_latest_stats_request() {
-            return pb_1.Message.getField(this, 2) != null;
-        }
-        get latest_stats_response() {
-            return pb_1.Message.getWrapperField(this, dependency_1.messages.LatestStatsResponse, 3) as dependency_1.messages.LatestStatsResponse;
-        }
-        set latest_stats_response(value: dependency_1.messages.LatestStatsResponse) {
-            pb_1.Message.setOneofWrapperField(this, 3, this.#one_of_decls[0], value);
-        }
-        get has_latest_stats_response() {
-            return pb_1.Message.getField(this, 3) != null;
-        }
-        get message() {
-            const cases: {
-                [index: number]: "none" | "latest_stats_request" | "latest_stats_response";
-            } = {
-                0: "none",
-                2: "latest_stats_request",
-                3: "latest_stats_response"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [2, 3])];
-        }
         static fromObject(data: {
-            api_token?: string;
-            latest_stats_request?: ReturnType<typeof dependency_1.messages.LatestStatsRequest.prototype.toObject>;
-            latest_stats_response?: ReturnType<typeof dependency_1.messages.LatestStatsResponse.prototype.toObject>;
-        }): Wrapper {
-            const message = new Wrapper({});
-            if (data.api_token != null) {
-                message.api_token = data.api_token;
-            }
-            if (data.latest_stats_request != null) {
-                message.latest_stats_request = dependency_1.messages.LatestStatsRequest.fromObject(data.latest_stats_request);
-            }
-            if (data.latest_stats_response != null) {
-                message.latest_stats_response = dependency_1.messages.LatestStatsResponse.fromObject(data.latest_stats_response);
+            error_code?: ErrorCode;
+        }): Error {
+            const message = new Error({});
+            if (data.error_code != null) {
+                message.error_code = data.error_code;
             }
             return message;
         }
         toObject() {
             const data: {
-                api_token?: string;
-                latest_stats_request?: ReturnType<typeof dependency_1.messages.LatestStatsRequest.prototype.toObject>;
-                latest_stats_response?: ReturnType<typeof dependency_1.messages.LatestStatsResponse.prototype.toObject>;
+                error_code?: ErrorCode;
             } = {};
-            if (this.api_token != null) {
-                data.api_token = this.api_token;
-            }
-            if (this.latest_stats_request != null) {
-                data.latest_stats_request = this.latest_stats_request.toObject();
-            }
-            if (this.latest_stats_response != null) {
-                data.latest_stats_response = this.latest_stats_response.toObject();
+            if (this.error_code != null) {
+                data.error_code = this.error_code;
             }
             return data;
         }
@@ -103,12 +52,240 @@ export namespace messages {
         serialize(w: pb_1.BinaryWriter): void;
         serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
             const writer = w || new pb_1.BinaryWriter();
-            if (this.api_token.length)
+            if (this.error_code != ErrorCode.GENERAL)
+                writer.writeEnum(1, this.error_code);
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): Error {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new Error();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    case 1:
+                        message.error_code = reader.readEnum();
+                        break;
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): Error {
+            return Error.deserialize(bytes);
+        }
+    }
+    export class Wrapper extends pb_1.Message {
+        #one_of_decls: number[][] = [[2, 3, 4, 5, 6], [1]];
+        constructor(data?: any[] | ({} & (({
+            error_response?: Error;
+            latest_stats_request?: never;
+            latest_stats_response?: never;
+            get_user_request?: never;
+            get_user_response?: never;
+        } | {
+            error_response?: never;
+            latest_stats_request?: dependency_1.messages.LatestStatsRequest;
+            latest_stats_response?: never;
+            get_user_request?: never;
+            get_user_response?: never;
+        } | {
+            error_response?: never;
+            latest_stats_request?: never;
+            latest_stats_response?: dependency_1.messages.LatestStatsResponse;
+            get_user_request?: never;
+            get_user_response?: never;
+        } | {
+            error_response?: never;
+            latest_stats_request?: never;
+            latest_stats_response?: never;
+            get_user_request?: dependency_2.messages.GetUserRequest;
+            get_user_response?: never;
+        } | {
+            error_response?: never;
+            latest_stats_request?: never;
+            latest_stats_response?: never;
+            get_user_request?: never;
+            get_user_response?: dependency_2.messages.GetUserResponse;
+        }) | ({
+            api_token?: string;
+        })))) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") {
+                if ("api_token" in data && data.api_token != undefined) {
+                    this.api_token = data.api_token;
+                }
+                if ("error_response" in data && data.error_response != undefined) {
+                    this.error_response = data.error_response;
+                }
+                if ("latest_stats_request" in data && data.latest_stats_request != undefined) {
+                    this.latest_stats_request = data.latest_stats_request;
+                }
+                if ("latest_stats_response" in data && data.latest_stats_response != undefined) {
+                    this.latest_stats_response = data.latest_stats_response;
+                }
+                if ("get_user_request" in data && data.get_user_request != undefined) {
+                    this.get_user_request = data.get_user_request;
+                }
+                if ("get_user_response" in data && data.get_user_response != undefined) {
+                    this.get_user_response = data.get_user_response;
+                }
+            }
+        }
+        get api_token() {
+            return pb_1.Message.getFieldWithDefault(this, 1, "") as string;
+        }
+        set api_token(value: string) {
+            pb_1.Message.setOneofField(this, 1, this.#one_of_decls[1], value);
+        }
+        get has_api_token() {
+            return pb_1.Message.getField(this, 1) != null;
+        }
+        get error_response() {
+            return pb_1.Message.getWrapperField(this, Error, 2) as Error;
+        }
+        set error_response(value: Error) {
+            pb_1.Message.setOneofWrapperField(this, 2, this.#one_of_decls[0], value);
+        }
+        get has_error_response() {
+            return pb_1.Message.getField(this, 2) != null;
+        }
+        get latest_stats_request() {
+            return pb_1.Message.getWrapperField(this, dependency_1.messages.LatestStatsRequest, 3) as dependency_1.messages.LatestStatsRequest;
+        }
+        set latest_stats_request(value: dependency_1.messages.LatestStatsRequest) {
+            pb_1.Message.setOneofWrapperField(this, 3, this.#one_of_decls[0], value);
+        }
+        get has_latest_stats_request() {
+            return pb_1.Message.getField(this, 3) != null;
+        }
+        get latest_stats_response() {
+            return pb_1.Message.getWrapperField(this, dependency_1.messages.LatestStatsResponse, 4) as dependency_1.messages.LatestStatsResponse;
+        }
+        set latest_stats_response(value: dependency_1.messages.LatestStatsResponse) {
+            pb_1.Message.setOneofWrapperField(this, 4, this.#one_of_decls[0], value);
+        }
+        get has_latest_stats_response() {
+            return pb_1.Message.getField(this, 4) != null;
+        }
+        get get_user_request() {
+            return pb_1.Message.getWrapperField(this, dependency_2.messages.GetUserRequest, 5) as dependency_2.messages.GetUserRequest;
+        }
+        set get_user_request(value: dependency_2.messages.GetUserRequest) {
+            pb_1.Message.setOneofWrapperField(this, 5, this.#one_of_decls[0], value);
+        }
+        get has_get_user_request() {
+            return pb_1.Message.getField(this, 5) != null;
+        }
+        get get_user_response() {
+            return pb_1.Message.getWrapperField(this, dependency_2.messages.GetUserResponse, 6) as dependency_2.messages.GetUserResponse;
+        }
+        set get_user_response(value: dependency_2.messages.GetUserResponse) {
+            pb_1.Message.setOneofWrapperField(this, 6, this.#one_of_decls[0], value);
+        }
+        get has_get_user_response() {
+            return pb_1.Message.getField(this, 6) != null;
+        }
+        get message() {
+            const cases: {
+                [index: number]: "none" | "error_response" | "latest_stats_request" | "latest_stats_response" | "get_user_request" | "get_user_response";
+            } = {
+                0: "none",
+                2: "error_response",
+                3: "latest_stats_request",
+                4: "latest_stats_response",
+                5: "get_user_request",
+                6: "get_user_response"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [2, 3, 4, 5, 6])];
+        }
+        get _api_token() {
+            const cases: {
+                [index: number]: "none" | "api_token";
+            } = {
+                0: "none",
+                1: "api_token"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [1])];
+        }
+        static fromObject(data: {
+            api_token?: string;
+            error_response?: ReturnType<typeof Error.prototype.toObject>;
+            latest_stats_request?: ReturnType<typeof dependency_1.messages.LatestStatsRequest.prototype.toObject>;
+            latest_stats_response?: ReturnType<typeof dependency_1.messages.LatestStatsResponse.prototype.toObject>;
+            get_user_request?: ReturnType<typeof dependency_2.messages.GetUserRequest.prototype.toObject>;
+            get_user_response?: ReturnType<typeof dependency_2.messages.GetUserResponse.prototype.toObject>;
+        }): Wrapper {
+            const message = new Wrapper({});
+            if (data.api_token != null) {
+                message.api_token = data.api_token;
+            }
+            if (data.error_response != null) {
+                message.error_response = Error.fromObject(data.error_response);
+            }
+            if (data.latest_stats_request != null) {
+                message.latest_stats_request = dependency_1.messages.LatestStatsRequest.fromObject(data.latest_stats_request);
+            }
+            if (data.latest_stats_response != null) {
+                message.latest_stats_response = dependency_1.messages.LatestStatsResponse.fromObject(data.latest_stats_response);
+            }
+            if (data.get_user_request != null) {
+                message.get_user_request = dependency_2.messages.GetUserRequest.fromObject(data.get_user_request);
+            }
+            if (data.get_user_response != null) {
+                message.get_user_response = dependency_2.messages.GetUserResponse.fromObject(data.get_user_response);
+            }
+            return message;
+        }
+        toObject() {
+            const data: {
+                api_token?: string;
+                error_response?: ReturnType<typeof Error.prototype.toObject>;
+                latest_stats_request?: ReturnType<typeof dependency_1.messages.LatestStatsRequest.prototype.toObject>;
+                latest_stats_response?: ReturnType<typeof dependency_1.messages.LatestStatsResponse.prototype.toObject>;
+                get_user_request?: ReturnType<typeof dependency_2.messages.GetUserRequest.prototype.toObject>;
+                get_user_response?: ReturnType<typeof dependency_2.messages.GetUserResponse.prototype.toObject>;
+            } = {};
+            if (this.api_token != null) {
+                data.api_token = this.api_token;
+            }
+            if (this.error_response != null) {
+                data.error_response = this.error_response.toObject();
+            }
+            if (this.latest_stats_request != null) {
+                data.latest_stats_request = this.latest_stats_request.toObject();
+            }
+            if (this.latest_stats_response != null) {
+                data.latest_stats_response = this.latest_stats_response.toObject();
+            }
+            if (this.get_user_request != null) {
+                data.get_user_request = this.get_user_request.toObject();
+            }
+            if (this.get_user_response != null) {
+                data.get_user_response = this.get_user_response.toObject();
+            }
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (this.has_api_token)
                 writer.writeString(1, this.api_token);
+            if (this.has_error_response)
+                writer.writeMessage(2, this.error_response, () => this.error_response.serialize(writer));
             if (this.has_latest_stats_request)
-                writer.writeMessage(2, this.latest_stats_request, () => this.latest_stats_request.serialize(writer));
+                writer.writeMessage(3, this.latest_stats_request, () => this.latest_stats_request.serialize(writer));
             if (this.has_latest_stats_response)
-                writer.writeMessage(3, this.latest_stats_response, () => this.latest_stats_response.serialize(writer));
+                writer.writeMessage(4, this.latest_stats_response, () => this.latest_stats_response.serialize(writer));
+            if (this.has_get_user_request)
+                writer.writeMessage(5, this.get_user_request, () => this.get_user_request.serialize(writer));
+            if (this.has_get_user_response)
+                writer.writeMessage(6, this.get_user_response, () => this.get_user_response.serialize(writer));
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -122,10 +299,19 @@ export namespace messages {
                         message.api_token = reader.readString();
                         break;
                     case 2:
-                        reader.readMessage(message.latest_stats_request, () => message.latest_stats_request = dependency_1.messages.LatestStatsRequest.deserialize(reader));
+                        reader.readMessage(message.error_response, () => message.error_response = Error.deserialize(reader));
                         break;
                     case 3:
+                        reader.readMessage(message.latest_stats_request, () => message.latest_stats_request = dependency_1.messages.LatestStatsRequest.deserialize(reader));
+                        break;
+                    case 4:
                         reader.readMessage(message.latest_stats_response, () => message.latest_stats_response = dependency_1.messages.LatestStatsResponse.deserialize(reader));
+                        break;
+                    case 5:
+                        reader.readMessage(message.get_user_request, () => message.get_user_request = dependency_2.messages.GetUserRequest.deserialize(reader));
+                        break;
+                    case 6:
+                        reader.readMessage(message.get_user_response, () => message.get_user_response = dependency_2.messages.GetUserResponse.deserialize(reader));
                         break;
                     default: reader.skipField();
                 }

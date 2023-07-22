@@ -20,8 +20,8 @@ type DiscordHookConfig struct {
 }
 
 type DiscordHooks struct {
-	SessionCookieConf *web.CookieConfig
-	Config            *DiscordHookConfig
+	SessionCookies *web.SessionCookiesConfig
+	Config         *DiscordHookConfig
 }
 
 func (discordHooks DiscordHooks) loadUser(dbConn *gorm.DB, config *oauth2.Config, token *models.OAuth2Token) (*models.User, error) {
@@ -30,11 +30,11 @@ func (discordHooks DiscordHooks) loadUser(dbConn *gorm.DB, config *oauth2.Config
 	if err := discordUser.FromAPI(
 		dbConn, config, token, discordHooks.Config.GuildID,
 		discordHooks.Config.SupporterRoleID, discordHooks.Config.VIPRoleID); err != nil {
-		return nil, fmt.Errorf("load discord from api: %w", err)
+		return nil, fmt.Errorf("discord from api: %w", err)
 	}
 	if err := user.FromDiscordUser(
 		dbConn, &discordUser); err != nil {
-		return nil, fmt.Errorf("fetch or create user discord: %w", err)
+		return nil, fmt.Errorf("from discord user: %w", err)
 	}
 	return &user, nil
 }
@@ -50,7 +50,7 @@ func (discordHooks DiscordHooks) OnLoginRequest(dbConn *gorm.DB, c echo.Context)
 func (discordHooks DiscordHooks) OnOAuth2Callback(dbConn *gorm.DB, c echo.Context, identity *identity.Identity, config *oauth2.Config, token *models.OAuth2Token) error {
 	user, err := discordHooks.loadUser(dbConn, config, token)
 	if err != nil {
-		return fmt.Errorf("fetch or create user: %w", err)
+		return fmt.Errorf("load user: %w", err)
 	}
 	session, err := user.GetSession(dbConn)
 	sessionMessage := messages.UserSessionCookieValue{
@@ -61,10 +61,8 @@ func (discordHooks DiscordHooks) OnOAuth2Callback(dbConn *gorm.DB, c echo.Contex
 	if err != nil {
 		return fmt.Errorf("marshal: %w", err)
 	}
-	sessionCookie, err := web.CreateEncryptedCookie(discordHooks.SessionCookieConf, identity, sessionBytes)
-	if err != nil {
-		return fmt.Errorf("create cookie: %w", err)
+	if err := discordHooks.SessionCookies.Set(c, identity, sessionBytes); err != nil {
+		return fmt.Errorf("set: %w", err)
 	}
-	c.SetCookie(sessionCookie)
 	return nil
 }
