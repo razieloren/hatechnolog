@@ -36,4 +36,5 @@ yarn-error.log*
 next-env.d.ts
 
 # protobuf messages
-/messages/
+messages/
+!messages/.gitkeep
