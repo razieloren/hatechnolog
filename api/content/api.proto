@@ -1,0 +1,42 @@
+syntax = "proto3";
+package messages;
+
+option go_package = "backend/modules/api/endpoints/messages/content";
+
+import "content/helpers.proto";
+
+message GetPageRequest {
+    string slug = 1;
+}
+
+message GetPageResponse {
+    ContentDetails details = 1;
+}
+
+message GetPostsTeasersRequest {}
+
+message GetPostsTeasersResponse {
+    repeated ContentTeaser teasers = 1;
+}
+
+message GetPostRequest {
+    string slug = 1;
+}
+
+message GetPostResponse {
+    ContentDetails details = 1;
+}
+
+message GetCategoriesTeasersRequest {}
+
+message GetCategoriesTeasersResponse {
+    repeated CategoryTeaser teasers = 1;
+}
+
+message GetCategoryRequest {
+    string slug = 1;
+}
+
+message GetCategoryResponse {
+    CategoryDetails details = 1;
+}

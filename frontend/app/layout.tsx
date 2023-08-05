@@ -1,12 +1,6 @@
-import Header from '@/components/header/Header'
 import './globals.css'
-import type { Metadata } from 'next'
-import Footer from '@/components/footer/Footer'
-
-export const metadata: Metadata = {
-  title: 'הטכנולוג | קהילות ופורומים טכנולוגיים',
-  description: 'בואו לתכנת, זה כיף! עם הקהילה הגדולה במדינה',
-}
+import Header from '@/components/pages/layout/Header'
+import Footer from '@/components/pages/layout/Footer'
 
 export default async function RootLayout({
   children,
@@ -15,14 +9,12 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en">
-        <body dir="rtl" className="m-0 p-0 text-white bg-purple-950">
-          <div className="w-3/4 container mx-auto">
-            <div className="font-alef flex flex-col items-start my-6 gap-12">
-              <Header/>
-              {children}
-              <Footer/>
+        <body dir="rtl" className="m-0 p-0 bg-primary text-words noam-regular">
+            <div className="w-11/12 container mx-auto flex flex-col gap-6">
+                <Header/>
+                {children}
+                <Footer/>
             </div>
-          </div>
         </body>
     </html>
   )

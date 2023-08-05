@@ -5,6 +5,12 @@ option go_package = "backend/modules/api/endpoints/messages/user";
 
 import "google/protobuf/timestamp.proto";
 
+enum UserState {
+    UNDEFINED = 0;
+    IN_CREATION = 1;
+    CREATED = 2;
+}
+
 message GetUserRequest {
     optional string handle = 1;
 }
@@ -17,14 +23,22 @@ message GetUserResponse {
     string avatar_url = 4;
     google.protobuf.Timestamp plan_since = 5;
     google.protobuf.Timestamp member_since = 6;
-    bool is_supporter = 7;
-    bool is_vip = 8;
-    optional string github_username = 9;
+    bool is_vip = 7;
+    optional string github_username = 8;
 
     // Returns only for authenticated user, private data.
-    optional google.protobuf.Timestamp tac_acceptance_date = 10;
-    optional bool allow_marketing_emails = 11;
-    optional bool allow_weekly_digest_emails = 12;
-    optional bool mfa_enabled = 13;
-    optional bool email_verified = 14;
+    optional bool is_hatechnolog_member = 9;
+    optional bool mfa_enabled = 10;
+    optional bool email_verified = 11;
+    UserState state = 12;
+
+    bool me = 13;
+}
+
+message UpdateDiscordUserRequest {
+    // Sent as part of a session, so no need for a handle.
+}
+
+message UpdateDiscordUserResponse {
+    // Just indicates success.
 }

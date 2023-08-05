@@ -1,9 +1,8 @@
 package models
 
 const (
-	BasicPlan     = "basic"
-	SupporterPlan = "supporter"
-	VIPPlan       = "vip"
+	BasicPlan = "basic"
+	VIPPlan   = "vip"
 )
 
 type Plan struct {

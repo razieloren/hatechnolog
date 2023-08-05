@@ -2,6 +2,8 @@ package endpoints
 
 import (
 	"backend/modules/api/endpoints/auth/models"
+	"backend/modules/api/endpoints/content"
+	"backend/modules/api/endpoints/courses"
 	"backend/modules/api/endpoints/messages"
 	"backend/modules/api/endpoints/stats"
 	"backend/modules/api/endpoints/user"
@@ -21,17 +23,14 @@ const (
 )
 
 type Router struct {
-	dbConn         *gorm.DB
-	identity       *identity.Identity
-	sessionCookies *web.SessionCookiesConfig
+	dbConn   *gorm.DB
+	identity *identity.Identity
 }
 
-func NewRouter(dbConn *gorm.DB, identity *identity.Identity,
-	sessionCookies *web.SessionCookiesConfig) *Router {
+func NewRouter(dbConn *gorm.DB, identity *identity.Identity) *Router {
 	return &Router{
-		dbConn:         dbConn,
-		identity:       identity,
-		sessionCookies: sessionCookies,
+		dbConn:   dbConn,
+		identity: identity,
 	}
 }
 
@@ -64,7 +63,7 @@ func (router *Router) RPCCommunicationWrapper(apiToken string) echo.MiddlewareFu
 func (router *Router) SessionMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var session models.Session
-		user, err := session.FromEcho(router.dbConn, router.identity, router.sessionCookies, c)
+		user, err := session.FromEcho(router.dbConn, router.identity, c)
 		if err != nil {
 			c.Logger().Error("Failed validating session: ", err)
 			return web.GenerateError(c, http.StatusUnauthorized, messages.ErrorCode_GENERAL)
@@ -82,8 +81,24 @@ func (router *Router) PublicRPCClient(c echo.Context) error {
 func (router *Router) PublicRPCServer(c echo.Context) error {
 	request := c.Get(messageRequestKey).(*messages.Wrapper)
 	switch request := request.Message.(type) {
-	case *messages.Wrapper_LatestStatsRequest:
-		return stats.EndpointLatestStats(router.dbConn, c, request.LatestStatsRequest)
+	case *messages.Wrapper_GetLatestStatsRequest:
+		return stats.EndpointLatestStats(router.dbConn, c, request.GetLatestStatsRequest)
+	case *messages.Wrapper_GetUserRequest:
+		return user.EndpointServerPublicGetUser(router.dbConn, c, request.GetUserRequest)
+	case *messages.Wrapper_GetCoursesTeasersRequest:
+		return courses.EndpointGetCoursesTeasers(router.dbConn, c, request.GetCoursesTeasersRequest)
+	case *messages.Wrapper_GetCourseRequest:
+		return courses.EndpointGetCourse(router.dbConn, c, request.GetCourseRequest)
+	case *messages.Wrapper_GetPageRequest:
+		return content.EndpointGetPageRequest(router.dbConn, c, request.GetPageRequest)
+	case *messages.Wrapper_GetPostsTeasersRequest:
+		return content.EndpointGetPostsTeasersRequest(router.dbConn, c, request.GetPostsTeasersRequest)
+	case *messages.Wrapper_GetPostRequest:
+		return content.EndpointGetPostRequest(router.dbConn, c, request.GetPostRequest)
+	case *messages.Wrapper_GetCategoriesTeasersRequest:
+		return content.EndpointGetCategoriesTeasersRequest(router.dbConn, c, request.GetCategoriesTeasersRequest)
+	case *messages.Wrapper_GetCategoryRequest:
+		return content.EndpointGetCategoryRequest(router.dbConn, c, request.GetCategoryRequest)
 	}
 	c.Logger().Error("Unknown public RPC server message type")
 	return web.GenerateError(c, http.StatusBadRequest, messages.ErrorCode_GENERAL)
@@ -93,8 +108,8 @@ func (router *Router) PrivateRPCClient(c echo.Context) error {
 	request := c.Get(messageRequestKey).(*messages.Wrapper)
 	sessionUser := c.Get(sessionUserKey).(*models.User)
 	switch request := request.Message.(type) {
-	case *messages.Wrapper_GetUserRequest:
-		return user.EndpointClientGetUser(router.dbConn, c, sessionUser, request.GetUserRequest)
+	case *messages.Wrapper_UpdateDiscordUserRequest:
+		return user.EndpointClientPrivateUpdateDiscordUser(router.dbConn, c, router.identity, sessionUser, request.UpdateDiscordUserRequest)
 	}
 	c.Logger().Error("Unknown private RPC client message type")
 	return web.GenerateError(c, http.StatusBadRequest, messages.ErrorCode_GENERAL)
@@ -105,7 +120,7 @@ func (router *Router) PrivateRPCServer(c echo.Context) error {
 	sessionUser := c.Get(sessionUserKey).(*models.User)
 	switch request := request.Message.(type) {
 	case *messages.Wrapper_GetUserRequest:
-		return user.EndpointServerGetUser(router.dbConn, c, sessionUser, request.GetUserRequest)
+		return user.EndpointServerPrivateGetUser(router.dbConn, c, sessionUser, request.GetUserRequest)
 	}
 	c.Logger().Error("Unknown private RPC server message type")
 	return web.GenerateError(c, http.StatusBadRequest, messages.ErrorCode_GENERAL)

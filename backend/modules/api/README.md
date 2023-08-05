@@ -58,7 +58,6 @@ config:
       hooks:
         discord:
           guild_id: STRING
-          supporter_role_id: STRING
           vip_role_id: STRING
   database:
     host: STRING

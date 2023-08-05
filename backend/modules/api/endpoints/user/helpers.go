@@ -35,20 +35,17 @@ func GetUser(dbConn *gorm.DB, c echo.Context, handle string, withPrivate bool) e
 	response.MemberSince = &timestamppb.Timestamp{
 		Seconds: requestedUser.CreatedAt.Unix(),
 	}
-	response.IsSupporter = requestedUser.DiscordUser.IsSupporter
 	response.IsVip = requestedUser.DiscordUser.IsVIP
 	if requestedUser.GithubUserID != nil {
 		response.GithubUsername = &requestedUser.GithubUser.Username
 	}
 
 	if withPrivate {
-		if requestedUser.TACAcceptedAt != nil {
-			response.TacAcceptanceDate.Seconds = requestedUser.TACAcceptedAt.Unix()
-		}
-		response.AllowMarketingEmails = &requestedUser.AllowMarketingEmails
-		response.AllowWeeklyDigestEmails = &requestedUser.AllowWeeklyDigest
+		response.IsHatechnologMember = &requestedUser.DiscordUser.HatechnologMember
 		response.MfaEnabled = &requestedUser.DiscordUser.MfaEnabled
 		response.EmailVerified = &requestedUser.DiscordUser.EmailVerified
+		response.State = user.UserState(requestedUser.State)
+		response.Me = true
 	}
 	return web.GenerateResponse(c, &messages.Wrapper{
 		Message: &messages.Wrapper_GetUserResponse{

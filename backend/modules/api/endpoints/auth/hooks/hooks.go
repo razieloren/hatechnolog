@@ -12,5 +12,7 @@ import (
 type ServiceHooks interface {
 	Name() string
 	OnLoginRequest(*gorm.DB, echo.Context) error
-	OnOAuth2Callback(*gorm.DB, echo.Context, *identity.Identity, *oauth2.Config, *models.OAuth2Token) error
+	GetAuthCodeURL(state string) string
+	OAuth2Exchange(authCode string) (*oauth2.Token, error)
+	OnOAuth2Callback(*gorm.DB, echo.Context, *identity.Identity, *models.OAuth2Token) error
 }

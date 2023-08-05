@@ -1,9 +1,11 @@
 package models
 
 import (
+	"backend/modules/api/config"
 	"backend/x/identity"
 	"backend/x/messages"
 	"backend/x/web"
+	"bytes"
 	"fmt"
 	"time"
 
@@ -20,9 +22,11 @@ const (
 
 type Session struct {
 	gorm.Model
-	UserID uint
-	Token  string    `gorm:"UNIQUE;NOT NULL;size:32"`
-	Exipry time.Time `gorm:"NOT NULL"`
+	UserID   uint
+	PublicID string    `gorm:"UNIQUE;NOT NULL;size:32"`
+	IV       []byte    `gorm:"NOT NULL"`
+	EncToken []byte    `gorm:"UNIQUE;NOT NULL"`
+	Exipry   time.Time `gorm:"NOT NULL"`
 }
 
 func (session *Session) TableName() string {
@@ -37,27 +41,28 @@ func (session *Session) Invalidate(dbConn *gorm.DB) error {
 	return dbConn.Delete(session).Error
 }
 
-func (session *Session) FromEcho(dbConn *gorm.DB, identity *identity.Identity, cookies *web.SessionCookiesConfig, c echo.Context) (*User, error) {
-	sessionCookie, err := cookies.Get(c)
+func (session *Session) FromEcho(dbConn *gorm.DB, identity *identity.Identity, c echo.Context) (*User, error) {
+	sessionCookie, err := config.Globals.Auth.SessionCookies.Get(c)
 	if err != nil {
 		return nil, fmt.Errorf("no session cookie: %w", err)
 	}
 	value, err := web.ParseEncryptedCookieValue(identity, sessionCookie.Value)
 	if err != nil {
 		// Malformed cookie, mark to delete.
-		cookies.Delete(c)
+		config.Globals.Auth.SessionCookies.Delete(c)
 		return nil, fmt.Errorf("parse encrypted cookie: %w", err)
 	}
 	userSession := messages.UserSessionCookieValue{}
 	if err := proto.Unmarshal(value, &userSession); err != nil {
 		// Malformed cookie, mark to delete.
-		cookies.Delete(c)
+		config.Globals.Auth.SessionCookies.Delete(c)
 		return nil, fmt.Errorf("unmarshal: %w", err)
 	}
+
 	if err := dbConn.Where(&Session{
-		Token: userSession.Token,
+		PublicID: userSession.PublicId,
 	}).Take(session).Error; err != nil {
-		cookies.Delete(c)
+		config.Globals.Auth.SessionCookies.Delete(c)
 		return nil, fmt.Errorf("no such session: %w", err)
 	}
 	if session.HasExpired() {
@@ -65,11 +70,19 @@ func (session *Session) FromEcho(dbConn *gorm.DB, identity *identity.Identity, c
 		if err := session.Invalidate(dbConn); err != nil {
 			return nil, fmt.Errorf("invalidate: %w", err)
 		}
-		cookies.Delete(c)
+		config.Globals.Auth.SessionCookies.Delete(c)
 		return nil, fmt.Errorf("session expired")
 	}
+	decToken, err := identity.GCMAESDecrypt(session.IV, session.EncToken)
+	if err != nil {
+		return nil, fmt.Errorf("GCMAESDecrypt: %w", err)
+	}
+	if !bytes.Equal(decToken, userSession.Token) {
+		return nil, fmt.Errorf("bad session token")
+	}
+
 	var user User
-	if err := dbConn.Take(&user, session.UserID).Error; err != nil {
+	if err := dbConn.Preload("DiscordUser").Preload("GithubUser").Preload("Plan").Take(&user, session.UserID).Error; err != nil {
 		return nil, fmt.Errorf("no such user: %w", err)
 	}
 	if user.Handle != userSession.Handle {

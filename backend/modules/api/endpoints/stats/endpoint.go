@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func EndpointLatestStats(dbConn *gorm.DB, c echo.Context, request *stats.LatestStatsRequest) error {
+func EndpointLatestStats(dbConn *gorm.DB, c echo.Context, request *stats.GetLatestStatsRequest) error {
 	discordStats, err := fetchDiscordLatestStats(dbConn, request.DiscordGuild)
 	if err != nil {
 		c.Logger().Error("Error fetching Discord latest stats: ", err)
@@ -23,8 +23,8 @@ func EndpointLatestStats(dbConn *gorm.DB, c echo.Context, request *stats.LatestS
 		c.Logger().Error("Error fetching Github latest stats: ", err)
 	}
 	return web.GenerateResponse(c, &messages.Wrapper{
-		Message: &messages.Wrapper_LatestStatsResponse{
-			LatestStatsResponse: &stats.LatestStatsResponse{
+		Message: &messages.Wrapper_GetLatestStatsResponse{
+			GetLatestStatsResponse: &stats.GetLatestStatsResponse{
 				DiscordStats: discordStats,
 				YoutubeStats: youtubeStats,
 				GithubStats:  githubStats,

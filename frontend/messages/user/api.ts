@@ -6,6 +6,11 @@
 import * as dependency_1 from "./../google/protobuf/timestamp";
 import * as pb_1 from "google-protobuf";
 export namespace messages {
+    export enum UserState {
+        UNDEFINED = 0,
+        IN_CREATION = 1,
+        CREATED = 2
+    }
     export class GetUserRequest extends pb_1.Message {
         #one_of_decls: number[][] = [[1]];
         constructor(data?: any[] | ({} & (({
@@ -86,7 +91,7 @@ export namespace messages {
         }
     }
     export class GetUserResponse extends pb_1.Message {
-        #one_of_decls: number[][] = [[9], [10], [11], [12], [13], [14]];
+        #one_of_decls: number[][] = [[8], [9], [10], [11]];
         constructor(data?: any[] | ({
             handle?: string;
             karma?: number;
@@ -94,16 +99,13 @@ export namespace messages {
             avatar_url?: string;
             plan_since?: dependency_1.google.protobuf.Timestamp;
             member_since?: dependency_1.google.protobuf.Timestamp;
-            is_supporter?: boolean;
             is_vip?: boolean;
+            state?: UserState;
+            me?: boolean;
         } & (({
             github_username?: string;
         }) | ({
-            tac_acceptance_date?: dependency_1.google.protobuf.Timestamp;
-        }) | ({
-            allow_marketing_emails?: boolean;
-        }) | ({
-            allow_weekly_digest_emails?: boolean;
+            is_hatechnolog_member?: boolean;
         }) | ({
             mfa_enabled?: boolean;
         }) | ({
@@ -130,29 +132,26 @@ export namespace messages {
                 if ("member_since" in data && data.member_since != undefined) {
                     this.member_since = data.member_since;
                 }
-                if ("is_supporter" in data && data.is_supporter != undefined) {
-                    this.is_supporter = data.is_supporter;
-                }
                 if ("is_vip" in data && data.is_vip != undefined) {
                     this.is_vip = data.is_vip;
                 }
                 if ("github_username" in data && data.github_username != undefined) {
                     this.github_username = data.github_username;
                 }
-                if ("tac_acceptance_date" in data && data.tac_acceptance_date != undefined) {
-                    this.tac_acceptance_date = data.tac_acceptance_date;
-                }
-                if ("allow_marketing_emails" in data && data.allow_marketing_emails != undefined) {
-                    this.allow_marketing_emails = data.allow_marketing_emails;
-                }
-                if ("allow_weekly_digest_emails" in data && data.allow_weekly_digest_emails != undefined) {
-                    this.allow_weekly_digest_emails = data.allow_weekly_digest_emails;
+                if ("is_hatechnolog_member" in data && data.is_hatechnolog_member != undefined) {
+                    this.is_hatechnolog_member = data.is_hatechnolog_member;
                 }
                 if ("mfa_enabled" in data && data.mfa_enabled != undefined) {
                     this.mfa_enabled = data.mfa_enabled;
                 }
                 if ("email_verified" in data && data.email_verified != undefined) {
                     this.email_verified = data.email_verified;
+                }
+                if ("state" in data && data.state != undefined) {
+                    this.state = data.state;
+                }
+                if ("me" in data && data.me != undefined) {
+                    this.me = data.me;
                 }
             }
         }
@@ -198,125 +197,95 @@ export namespace messages {
         get has_member_since() {
             return pb_1.Message.getField(this, 6) != null;
         }
-        get is_supporter() {
+        get is_vip() {
             return pb_1.Message.getFieldWithDefault(this, 7, false) as boolean;
         }
-        set is_supporter(value: boolean) {
+        set is_vip(value: boolean) {
             pb_1.Message.setField(this, 7, value);
         }
-        get is_vip() {
-            return pb_1.Message.getFieldWithDefault(this, 8, false) as boolean;
-        }
-        set is_vip(value: boolean) {
-            pb_1.Message.setField(this, 8, value);
-        }
         get github_username() {
-            return pb_1.Message.getFieldWithDefault(this, 9, "") as string;
+            return pb_1.Message.getFieldWithDefault(this, 8, "") as string;
         }
         set github_username(value: string) {
-            pb_1.Message.setOneofField(this, 9, this.#one_of_decls[0], value);
+            pb_1.Message.setOneofField(this, 8, this.#one_of_decls[0], value);
         }
         get has_github_username() {
+            return pb_1.Message.getField(this, 8) != null;
+        }
+        get is_hatechnolog_member() {
+            return pb_1.Message.getFieldWithDefault(this, 9, false) as boolean;
+        }
+        set is_hatechnolog_member(value: boolean) {
+            pb_1.Message.setOneofField(this, 9, this.#one_of_decls[1], value);
+        }
+        get has_is_hatechnolog_member() {
             return pb_1.Message.getField(this, 9) != null;
         }
-        get tac_acceptance_date() {
-            return pb_1.Message.getWrapperField(this, dependency_1.google.protobuf.Timestamp, 10) as dependency_1.google.protobuf.Timestamp;
-        }
-        set tac_acceptance_date(value: dependency_1.google.protobuf.Timestamp) {
-            pb_1.Message.setOneofWrapperField(this, 10, this.#one_of_decls[1], value);
-        }
-        get has_tac_acceptance_date() {
-            return pb_1.Message.getField(this, 10) != null;
-        }
-        get allow_marketing_emails() {
-            return pb_1.Message.getFieldWithDefault(this, 11, false) as boolean;
-        }
-        set allow_marketing_emails(value: boolean) {
-            pb_1.Message.setOneofField(this, 11, this.#one_of_decls[2], value);
-        }
-        get has_allow_marketing_emails() {
-            return pb_1.Message.getField(this, 11) != null;
-        }
-        get allow_weekly_digest_emails() {
-            return pb_1.Message.getFieldWithDefault(this, 12, false) as boolean;
-        }
-        set allow_weekly_digest_emails(value: boolean) {
-            pb_1.Message.setOneofField(this, 12, this.#one_of_decls[3], value);
-        }
-        get has_allow_weekly_digest_emails() {
-            return pb_1.Message.getField(this, 12) != null;
-        }
         get mfa_enabled() {
-            return pb_1.Message.getFieldWithDefault(this, 13, false) as boolean;
+            return pb_1.Message.getFieldWithDefault(this, 10, false) as boolean;
         }
         set mfa_enabled(value: boolean) {
-            pb_1.Message.setOneofField(this, 13, this.#one_of_decls[4], value);
+            pb_1.Message.setOneofField(this, 10, this.#one_of_decls[2], value);
         }
         get has_mfa_enabled() {
-            return pb_1.Message.getField(this, 13) != null;
+            return pb_1.Message.getField(this, 10) != null;
         }
         get email_verified() {
-            return pb_1.Message.getFieldWithDefault(this, 14, false) as boolean;
+            return pb_1.Message.getFieldWithDefault(this, 11, false) as boolean;
         }
         set email_verified(value: boolean) {
-            pb_1.Message.setOneofField(this, 14, this.#one_of_decls[5], value);
+            pb_1.Message.setOneofField(this, 11, this.#one_of_decls[3], value);
         }
         get has_email_verified() {
-            return pb_1.Message.getField(this, 14) != null;
+            return pb_1.Message.getField(this, 11) != null;
+        }
+        get state() {
+            return pb_1.Message.getFieldWithDefault(this, 12, UserState.UNDEFINED) as UserState;
+        }
+        set state(value: UserState) {
+            pb_1.Message.setField(this, 12, value);
+        }
+        get me() {
+            return pb_1.Message.getFieldWithDefault(this, 13, false) as boolean;
+        }
+        set me(value: boolean) {
+            pb_1.Message.setField(this, 13, value);
         }
         get _github_username() {
             const cases: {
                 [index: number]: "none" | "github_username";
             } = {
                 0: "none",
-                9: "github_username"
+                8: "github_username"
+            };
+            return cases[pb_1.Message.computeOneofCase(this, [8])];
+        }
+        get _is_hatechnolog_member() {
+            const cases: {
+                [index: number]: "none" | "is_hatechnolog_member";
+            } = {
+                0: "none",
+                9: "is_hatechnolog_member"
             };
             return cases[pb_1.Message.computeOneofCase(this, [9])];
-        }
-        get _tac_acceptance_date() {
-            const cases: {
-                [index: number]: "none" | "tac_acceptance_date";
-            } = {
-                0: "none",
-                10: "tac_acceptance_date"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [10])];
-        }
-        get _allow_marketing_emails() {
-            const cases: {
-                [index: number]: "none" | "allow_marketing_emails";
-            } = {
-                0: "none",
-                11: "allow_marketing_emails"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [11])];
-        }
-        get _allow_weekly_digest_emails() {
-            const cases: {
-                [index: number]: "none" | "allow_weekly_digest_emails";
-            } = {
-                0: "none",
-                12: "allow_weekly_digest_emails"
-            };
-            return cases[pb_1.Message.computeOneofCase(this, [12])];
         }
         get _mfa_enabled() {
             const cases: {
                 [index: number]: "none" | "mfa_enabled";
             } = {
                 0: "none",
-                13: "mfa_enabled"
+                10: "mfa_enabled"
             };
-            return cases[pb_1.Message.computeOneofCase(this, [13])];
+            return cases[pb_1.Message.computeOneofCase(this, [10])];
         }
         get _email_verified() {
             const cases: {
                 [index: number]: "none" | "email_verified";
             } = {
                 0: "none",
-                14: "email_verified"
+                11: "email_verified"
             };
-            return cases[pb_1.Message.computeOneofCase(this, [14])];
+            return cases[pb_1.Message.computeOneofCase(this, [11])];
         }
         static fromObject(data: {
             handle?: string;
@@ -325,14 +294,13 @@ export namespace messages {
             avatar_url?: string;
             plan_since?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
             member_since?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
-            is_supporter?: boolean;
             is_vip?: boolean;
             github_username?: string;
-            tac_acceptance_date?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
-            allow_marketing_emails?: boolean;
-            allow_weekly_digest_emails?: boolean;
+            is_hatechnolog_member?: boolean;
             mfa_enabled?: boolean;
             email_verified?: boolean;
+            state?: UserState;
+            me?: boolean;
         }): GetUserResponse {
             const message = new GetUserResponse({});
             if (data.handle != null) {
@@ -353,29 +321,26 @@ export namespace messages {
             if (data.member_since != null) {
                 message.member_since = dependency_1.google.protobuf.Timestamp.fromObject(data.member_since);
             }
-            if (data.is_supporter != null) {
-                message.is_supporter = data.is_supporter;
-            }
             if (data.is_vip != null) {
                 message.is_vip = data.is_vip;
             }
             if (data.github_username != null) {
                 message.github_username = data.github_username;
             }
-            if (data.tac_acceptance_date != null) {
-                message.tac_acceptance_date = dependency_1.google.protobuf.Timestamp.fromObject(data.tac_acceptance_date);
-            }
-            if (data.allow_marketing_emails != null) {
-                message.allow_marketing_emails = data.allow_marketing_emails;
-            }
-            if (data.allow_weekly_digest_emails != null) {
-                message.allow_weekly_digest_emails = data.allow_weekly_digest_emails;
+            if (data.is_hatechnolog_member != null) {
+                message.is_hatechnolog_member = data.is_hatechnolog_member;
             }
             if (data.mfa_enabled != null) {
                 message.mfa_enabled = data.mfa_enabled;
             }
             if (data.email_verified != null) {
                 message.email_verified = data.email_verified;
+            }
+            if (data.state != null) {
+                message.state = data.state;
+            }
+            if (data.me != null) {
+                message.me = data.me;
             }
             return message;
         }
@@ -387,14 +352,13 @@ export namespace messages {
                 avatar_url?: string;
                 plan_since?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
                 member_since?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
-                is_supporter?: boolean;
                 is_vip?: boolean;
                 github_username?: string;
-                tac_acceptance_date?: ReturnType<typeof dependency_1.google.protobuf.Timestamp.prototype.toObject>;
-                allow_marketing_emails?: boolean;
-                allow_weekly_digest_emails?: boolean;
+                is_hatechnolog_member?: boolean;
                 mfa_enabled?: boolean;
                 email_verified?: boolean;
+                state?: UserState;
+                me?: boolean;
             } = {};
             if (this.handle != null) {
                 data.handle = this.handle;
@@ -414,29 +378,26 @@ export namespace messages {
             if (this.member_since != null) {
                 data.member_since = this.member_since.toObject();
             }
-            if (this.is_supporter != null) {
-                data.is_supporter = this.is_supporter;
-            }
             if (this.is_vip != null) {
                 data.is_vip = this.is_vip;
             }
             if (this.github_username != null) {
                 data.github_username = this.github_username;
             }
-            if (this.tac_acceptance_date != null) {
-                data.tac_acceptance_date = this.tac_acceptance_date.toObject();
-            }
-            if (this.allow_marketing_emails != null) {
-                data.allow_marketing_emails = this.allow_marketing_emails;
-            }
-            if (this.allow_weekly_digest_emails != null) {
-                data.allow_weekly_digest_emails = this.allow_weekly_digest_emails;
+            if (this.is_hatechnolog_member != null) {
+                data.is_hatechnolog_member = this.is_hatechnolog_member;
             }
             if (this.mfa_enabled != null) {
                 data.mfa_enabled = this.mfa_enabled;
             }
             if (this.email_verified != null) {
                 data.email_verified = this.email_verified;
+            }
+            if (this.state != null) {
+                data.state = this.state;
+            }
+            if (this.me != null) {
+                data.me = this.me;
             }
             return data;
         }
@@ -456,22 +417,20 @@ export namespace messages {
                 writer.writeMessage(5, this.plan_since, () => this.plan_since.serialize(writer));
             if (this.has_member_since)
                 writer.writeMessage(6, this.member_since, () => this.member_since.serialize(writer));
-            if (this.is_supporter != false)
-                writer.writeBool(7, this.is_supporter);
             if (this.is_vip != false)
-                writer.writeBool(8, this.is_vip);
+                writer.writeBool(7, this.is_vip);
             if (this.has_github_username)
-                writer.writeString(9, this.github_username);
-            if (this.has_tac_acceptance_date)
-                writer.writeMessage(10, this.tac_acceptance_date, () => this.tac_acceptance_date.serialize(writer));
-            if (this.has_allow_marketing_emails)
-                writer.writeBool(11, this.allow_marketing_emails);
-            if (this.has_allow_weekly_digest_emails)
-                writer.writeBool(12, this.allow_weekly_digest_emails);
+                writer.writeString(8, this.github_username);
+            if (this.has_is_hatechnolog_member)
+                writer.writeBool(9, this.is_hatechnolog_member);
             if (this.has_mfa_enabled)
-                writer.writeBool(13, this.mfa_enabled);
+                writer.writeBool(10, this.mfa_enabled);
             if (this.has_email_verified)
-                writer.writeBool(14, this.email_verified);
+                writer.writeBool(11, this.email_verified);
+            if (this.state != UserState.UNDEFINED)
+                writer.writeEnum(12, this.state);
+            if (this.me != false)
+                writer.writeBool(13, this.me);
             if (!w)
                 return writer.getResultBuffer();
         }
@@ -500,28 +459,25 @@ export namespace messages {
                         reader.readMessage(message.member_since, () => message.member_since = dependency_1.google.protobuf.Timestamp.deserialize(reader));
                         break;
                     case 7:
-                        message.is_supporter = reader.readBool();
-                        break;
-                    case 8:
                         message.is_vip = reader.readBool();
                         break;
-                    case 9:
+                    case 8:
                         message.github_username = reader.readString();
                         break;
+                    case 9:
+                        message.is_hatechnolog_member = reader.readBool();
+                        break;
                     case 10:
-                        reader.readMessage(message.tac_acceptance_date, () => message.tac_acceptance_date = dependency_1.google.protobuf.Timestamp.deserialize(reader));
-                        break;
-                    case 11:
-                        message.allow_marketing_emails = reader.readBool();
-                        break;
-                    case 12:
-                        message.allow_weekly_digest_emails = reader.readBool();
-                        break;
-                    case 13:
                         message.mfa_enabled = reader.readBool();
                         break;
-                    case 14:
+                    case 11:
                         message.email_verified = reader.readBool();
+                        break;
+                    case 12:
+                        message.state = reader.readEnum();
+                        break;
+                    case 13:
+                        message.me = reader.readBool();
                         break;
                     default: reader.skipField();
                 }
@@ -533,6 +489,86 @@ export namespace messages {
         }
         static deserializeBinary(bytes: Uint8Array): GetUserResponse {
             return GetUserResponse.deserialize(bytes);
+        }
+    }
+    export class UpdateDiscordUserRequest extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {}) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") { }
+        }
+        static fromObject(data: {}): UpdateDiscordUserRequest {
+            const message = new UpdateDiscordUserRequest({});
+            return message;
+        }
+        toObject() {
+            const data: {} = {};
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateDiscordUserRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateDiscordUserRequest();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): UpdateDiscordUserRequest {
+            return UpdateDiscordUserRequest.deserialize(bytes);
+        }
+    }
+    export class UpdateDiscordUserResponse extends pb_1.Message {
+        #one_of_decls: number[][] = [];
+        constructor(data?: any[] | {}) {
+            super();
+            pb_1.Message.initialize(this, Array.isArray(data) ? data : [], 0, -1, [], this.#one_of_decls);
+            if (!Array.isArray(data) && typeof data == "object") { }
+        }
+        static fromObject(data: {}): UpdateDiscordUserResponse {
+            const message = new UpdateDiscordUserResponse({});
+            return message;
+        }
+        toObject() {
+            const data: {} = {};
+            return data;
+        }
+        serialize(): Uint8Array;
+        serialize(w: pb_1.BinaryWriter): void;
+        serialize(w?: pb_1.BinaryWriter): Uint8Array | void {
+            const writer = w || new pb_1.BinaryWriter();
+            if (!w)
+                return writer.getResultBuffer();
+        }
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): UpdateDiscordUserResponse {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new UpdateDiscordUserResponse();
+            while (reader.nextField()) {
+                if (reader.isEndGroup())
+                    break;
+                switch (reader.getFieldNumber()) {
+                    default: reader.skipField();
+                }
+            }
+            return message;
+        }
+        serializeBinary(): Uint8Array {
+            return this.serialize();
+        }
+        static deserializeBinary(bytes: Uint8Array): UpdateDiscordUserResponse {
+            return UpdateDiscordUserResponse.deserialize(bytes);
         }
     }
 }

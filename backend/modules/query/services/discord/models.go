@@ -8,7 +8,7 @@ import (
 
 type GuildStats struct {
 	gorm.Model
-	GuildName           string        `gorm:"NOT NULL;size:100"`
+	GuildName           string        `gorm:"NOT NULL;"`
 	Success             bool          `gorm:"NOT NULL"`
 	Error               *string       `gorm:"default:NULL"`
 	NewHumans           int           `gorm:"NOT NULL"`

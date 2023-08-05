@@ -1,12 +1,14 @@
 package models
 
 import (
+	"backend/modules/api/config"
+	"backend/x/identity"
 	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/bwmarrin/discordgo"
-	"golang.org/x/oauth2"
+	"github.com/ravener/discord-oauth2"
 	"gorm.io/gorm"
 )
 
@@ -27,7 +29,6 @@ type DiscordUser struct {
 	MfaEnabled        bool `gorm:"NOT NULL"`
 	EmailVerified     bool `gorm:"NOT NULL"`
 	HatechnologMember bool `gorm:"NOT NULL"`
-	IsSupporter       bool `gorm:"NOT NULL"`
 	IsVIP             bool `gorm:"NOT NULL"`
 }
 
@@ -42,7 +43,7 @@ func (discordUser *DiscordUser) GetAvatar() string {
 	return discordUser.AvatarURL
 }
 
-func (discordUser *DiscordUser) checkGuildMembership(client *discordgo.Session, guildID string) error {
+func (discordUser *DiscordUser) loadGuildMembershipFromAPI(client *discordgo.Session) error {
 	for {
 		afterId := ""
 		apiUsersGuilds, err := client.UserGuilds(maxUserGuildsPerRequest, "", afterId)
@@ -50,7 +51,7 @@ func (discordUser *DiscordUser) checkGuildMembership(client *discordgo.Session, 
 			return fmt.Errorf("user guilds: %w", err)
 		}
 		for _, apiUserGuild := range apiUsersGuilds {
-			if apiUserGuild.ID == guildID {
+			if apiUserGuild.ID == config.Globals.Consts.Discord.GuildID {
 				discordUser.HatechnologMember = true
 				break
 			}
@@ -63,8 +64,8 @@ func (discordUser *DiscordUser) checkGuildMembership(client *discordgo.Session, 
 	return nil
 }
 
-func (discordUser *DiscordUser) checkRoleStatus(client *discordgo.Session, guildID, supporterRoleID, VIPRoleID string) error {
-	memberApi, err := client.UserGuildMember(guildID)
+func (discordUser *DiscordUser) loadRoleStatusFromAPI(client *discordgo.Session) error {
+	memberApi, err := client.UserGuildMember(config.Globals.Consts.Discord.GuildID)
 	if err != nil {
 		return fmt.Errorf("user guild member: %w", err)
 	}
@@ -73,18 +74,18 @@ func (discordUser *DiscordUser) checkRoleStatus(client *discordgo.Session, guild
 		discordUser.GuildAvatarURL = &avatarUrl
 	}
 	for _, roleID := range memberApi.Roles {
-		if roleID == supporterRoleID {
-			discordUser.IsSupporter = true
-		} else if roleID == VIPRoleID {
+		if roleID == config.Globals.Consts.Discord.VIPRoleID {
 			discordUser.IsVIP = true
 		}
 	}
 	return nil
 }
 
-func (discordUser *DiscordUser) FromAPI(dbConn *gorm.DB, config *oauth2.Config, token *OAuth2Token, guildID, supporterRoleID, VIPRoleID string) error {
+func (discordUser *DiscordUser) updateFromAPI(dbConn *gorm.DB, identity *identity.Identity, token *OAuth2Token) error {
 	cbError, newTokenError, saveTokenError := token.SafeAction(
-		dbConn, config, func(client *http.Client) error {
+		dbConn, identity,
+		config.Globals.Auth.OAuth2.Config.Discord.ToOAuth2Config(discord.Endpoint),
+		func(client *http.Client) error {
 			discordClient, err := discordgo.New("")
 			if err != nil {
 				return fmt.Errorf("new discord: %w", err)
@@ -100,14 +101,17 @@ func (discordUser *DiscordUser) FromAPI(dbConn *gorm.DB, config *oauth2.Config, 
 				if !errors.Is(err, gorm.ErrRecordNotFound) {
 					return fmt.Errorf("take discord user: %w", err)
 				}
+				discordUser.OAuth2TokenID = token.ID
 			} else {
-				// This user has been here before, we need to delete his old token.
-				if err := dbConn.Delete(&OAuth2Token{}, discordUser.OAuth2TokenID).Error; err != nil {
-					return fmt.Errorf("delete oauth2: %w", err)
+				// A new token has been used (new login) we need to delete the old token.
+				if discordUser.OAuth2TokenID != token.ID {
+					if err := dbConn.Delete(&OAuth2Token{}, discordUser.OAuth2TokenID).Error; err != nil {
+						return fmt.Errorf("delete oauth2: %w", err)
+					}
+					discordUser.OAuth2TokenID = token.ID
 				}
 				// All the other values will be updated from the API.
 			}
-			discordUser.OAuth2TokenID = token.ID
 			discordUser.DiscordID = apiUser.ID
 			discordUser.Username = apiUser.Username
 			discordUser.Email = apiUser.Email
@@ -115,14 +119,13 @@ func (discordUser *DiscordUser) FromAPI(dbConn *gorm.DB, config *oauth2.Config, 
 			discordUser.MfaEnabled = apiUser.MFAEnabled
 			discordUser.EmailVerified = apiUser.Verified
 			discordUser.HatechnologMember = false
-			discordUser.IsSupporter = false
 			discordUser.IsVIP = false
-			if err := discordUser.checkGuildMembership(discordClient, guildID); err != nil {
+			if err := discordUser.loadGuildMembershipFromAPI(discordClient); err != nil {
 				return fmt.Errorf("check guild memebership: %w", err)
 			}
 			if discordUser.HatechnologMember {
 				// Only if member if Hatechnolog server, check for special roles.
-				if err := discordUser.checkRoleStatus(discordClient, guildID, supporterRoleID, VIPRoleID); err != nil {
+				if err := discordUser.loadRoleStatusFromAPI(discordClient); err != nil {
 					return fmt.Errorf("check role status: %w", err)
 				}
 			}
@@ -141,4 +144,16 @@ func (discordUser *DiscordUser) FromAPI(dbConn *gorm.DB, config *oauth2.Config, 
 		return fmt.Errorf("save token: %w", newTokenError)
 	}
 	return nil
+}
+
+func (discordUser *DiscordUser) FromOAuth2Token(dbConn *gorm.DB, identity *identity.Identity, token *OAuth2Token) error {
+	return discordUser.updateFromAPI(dbConn, identity, token)
+}
+
+func (discordUser *DiscordUser) FromUser(dbConn *gorm.DB, identity *identity.Identity, user *User) error {
+	var oauthToken OAuth2Token
+	if err := dbConn.Take(&oauthToken, user.DiscordUser.OAuth2TokenID).Error; err != nil {
+		return fmt.Errorf("take oauth2 token: %w", err)
+	}
+	return discordUser.updateFromAPI(dbConn, identity, &oauthToken)
 }

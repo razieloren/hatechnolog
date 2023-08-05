@@ -5,6 +5,8 @@ option go_package = "backend/modules/api/endpoints/messages";
 
 import "stats/api.proto";
 import "user/api.proto";
+import "courses/api.proto";
+import "content/api.proto";
 
 // Error codes that are sent to the frontend, should not expose sensitive info.
 enum ErrorCode {
@@ -20,9 +22,25 @@ message Wrapper {
     optional string api_token = 1;
     oneof message {
         Error error_response = 2;
-        LatestStatsRequest latest_stats_request = 3;
-        LatestStatsResponse latest_stats_response = 4;
+        GetLatestStatsRequest get_latest_stats_request = 3;
+        GetLatestStatsResponse get_latest_stats_response = 4;
         GetUserRequest get_user_request = 5;
         GetUserResponse get_user_response = 6;
+        UpdateDiscordUserRequest update_discord_user_request = 7;
+        UpdateDiscordUserResponse update_discord_user_response = 8;
+        GetCoursesTeasersRequest get_courses_teasers_request = 9;
+        GetCoursesTeasersResponse get_courses_teasers_response = 10;
+        GetCourseRequest get_course_request = 11;
+        GetCourseResponse get_course_response = 12;
+        GetPageRequest get_page_request = 13;
+        GetPageResponse get_page_response = 14;
+        GetPostsTeasersRequest get_posts_teasers_request = 15;
+        GetPostsTeasersResponse get_posts_teasers_response = 16;
+        GetPostRequest get_post_request = 17;
+        GetPostResponse get_post_response = 18;
+        GetCategoriesTeasersRequest get_categories_teasers_request = 19;
+        GetCategoriesTeasersResponse get_categories_teasers_response = 20;
+        GetCategoryRequest get_category_request = 21;
+        GetCategoryResponse get_category_response = 22;
     }
 }

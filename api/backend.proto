@@ -5,7 +5,8 @@ option go_package = "backend/x/messages";
 
 message UserSessionCookieValue {
     string handle = 1;
-    string token = 2;
+    string public_id = 2;
+    bytes token = 3;
 }
 
 message LoginStateCookieValue {

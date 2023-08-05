@@ -46,7 +46,7 @@ clean-binaries:
 	rm -rf ${OUT_DIR}
 
 clean-images:
-	docker image rm `docker image ls | grep hatechnolog/modules/query | tr -s ' ' | cut -d' ' -f3 | tr '\n' ' '`
+	docker image rm `docker image ls | grep hatechnolog/modules/${MODULE_NAME} | tr -s ' ' | cut -d' ' -f3 | tr '\n' ' '`
 
 clean: clean-binaries clean-images
 

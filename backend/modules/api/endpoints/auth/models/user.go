@@ -1,17 +1,16 @@
 package models
 
 import (
+	"crypto/rand"
 	"errors"
 	"fmt"
 	"time"
 
+	user_messages "backend/modules/api/endpoints/messages/user"
+	"backend/x/identity"
+
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"gorm.io/gorm"
-)
-
-const (
-	UserStateInCreation = 0
-	UserStateCreated    = 1
 )
 
 var (
@@ -20,20 +19,17 @@ var (
 
 type User struct {
 	gorm.Model
-	Handle               string `gorm:"UNIQUE;NOT NULL"`
-	Karma                uint32 `gorm:"NOT NULL"`
-	AllowMarketingEmails bool   `gorm:"NOT NULL"`
-	AllowWeeklyDigest    bool   `gorm:"NOT NULL"`
-	State                uint32 `gorm:"NOT NULL"`
-	TACAcceptedAt        *time.Time
-	DiscordUserID        uint `gorm:"NOT NULL"`
-	DiscordUser          DiscordUser
-	GithubUserID         *uint
-	GithubUser           GithubUser
-	Session              Session
-	PlanID               uint `gorm:"NOT NULL"`
-	Plan                 Plan
-	PlanGrantedAt        time.Time `gorm:"NOT NULL"`
+	Handle        string `gorm:"UNIQUE;NOT NULL"`
+	Karma         uint32 `gorm:"NOT NULL"`
+	State         int32  `gorm:"NOT NULL"`
+	DiscordUserID uint   `gorm:"NOT NULL"`
+	DiscordUser   DiscordUser
+	GithubUserID  *uint
+	GithubUser    GithubUser
+	Session       Session
+	PlanID        uint `gorm:"NOT NULL"`
+	Plan          Plan
+	PlanGrantedAt time.Time `gorm:"NOT NULL"`
 	// Attached user's roles.
 	Roles []Role `gorm:"many2many:api.user_role"`
 	// User-specific permissions, this should be avoided.
@@ -58,7 +54,6 @@ func (user *User) FromDiscordUser(dbConn *gorm.DB, discordUser *DiscordUser) err
 			return fmt.Errorf("find roles: %w", err)
 		}
 		user.Roles = append(user.Roles, roles...)
-		user.State = UserStateInCreation
 	}
 	// Sync handle with Discord's username.
 	user.Handle = discordUser.Username
@@ -66,8 +61,6 @@ func (user *User) FromDiscordUser(dbConn *gorm.DB, discordUser *DiscordUser) err
 	planName := BasicPlan
 	if discordUser.IsVIP {
 		planName = VIPPlan
-	} else if discordUser.IsSupporter {
-		planName = SupporterPlan
 	}
 	if err := dbConn.Where(&Plan{Name: planName}).Take(&plan).Error; err != nil {
 		return fmt.Errorf("take plan: %w", err)
@@ -75,6 +68,12 @@ func (user *User) FromDiscordUser(dbConn *gorm.DB, discordUser *DiscordUser) err
 	if plan.ID != user.PlanID {
 		user.PlanID = plan.ID
 		user.PlanGrantedAt = time.Now().UTC()
+	}
+	// Determine if we have enough info for the user.
+	if !discordUser.HatechnologMember || !discordUser.EmailVerified {
+		user.State = int32(user_messages.UserState_IN_CREATION)
+	} else {
+		user.State = int32(user_messages.UserState_CREATED)
 	}
 	if err := dbConn.Save(user).Error; err != nil {
 		return fmt.Errorf("save user: %w", err)
@@ -88,30 +87,40 @@ func (user *User) FromHandle(dbConn *gorm.DB, handle string) error {
 	}).Preload("DiscordUser").Preload("GithubUser").Preload("Plan").Take(user).Error
 }
 
-func (user *User) GetSession(dbConn *gorm.DB) (*Session, error) {
+func (user *User) GetSession(dbConn *gorm.DB, identity *identity.Identity) (*Session, []byte, error) {
 	var session Session
 	if err := dbConn.Where(&Session{
 		UserID: user.ID,
 	}).Take(&session).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, fmt.Errorf("take session: %w", err)
+			return nil, nil, fmt.Errorf("take session: %w", err)
 		}
 	} else {
 		// An active session was found, but a new one requested, deleting it.
 		if err := session.Invalidate(dbConn); err != nil {
-			return nil, fmt.Errorf("invalidate: %w", err)
+			return nil, nil, fmt.Errorf("invalidate: %w", err)
 		}
 	}
 	// Creating a new, fresh session.
 	session.UserID = user.ID
-	sessionToken, err := gonanoid.New(SessionTokenLength)
+	sessionPublicID, err := gonanoid.New(SessionTokenLength)
 	if err != nil {
-		return nil, fmt.Errorf("new nanoid: %w", err)
+		return nil, nil, fmt.Errorf("new nanoid: %w", err)
 	}
-	session.Token = sessionToken
+	session.PublicID = sessionPublicID
+	sessionToken := make([]byte, 32)
+	if _, err := rand.Read(sessionToken); err != nil {
+		return nil, nil, fmt.Errorf("read: %w", err)
+	}
+	iv, encData, err := identity.GCMAESEncrypt(sessionToken)
+	if err != nil {
+		return nil, nil, fmt.Errorf("GCMAESEncrypt: %w", err)
+	}
+	session.IV = iv
+	session.EncToken = encData
 	session.Exipry = time.Now().UTC().Add(SessionLength)
 	if err := dbConn.Save(&session).Error; err != nil {
-		return nil, fmt.Errorf("save session: %w", err)
+		return nil, nil, fmt.Errorf("save session: %w", err)
 	}
-	return &session, nil
+	return &session, sessionToken, nil
 }

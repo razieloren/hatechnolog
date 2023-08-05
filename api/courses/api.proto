@@ -1,0 +1,20 @@
+syntax = "proto3";
+package messages;
+
+option go_package = "backend/modules/api/endpoints/messages/courses";
+
+import "courses/helpers.proto";
+
+message GetCoursesTeasersRequest {}
+
+message GetCoursesTeasersResponse {
+    repeated CourseTeaser teasers = 1;
+}
+
+message GetCourseRequest {
+    string slug = 1;
+}
+
+message GetCourseResponse {
+    CourseDetails details = 1;
+}

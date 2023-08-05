@@ -6,7 +6,7 @@
 import * as dependency_1 from "./helpers";
 import * as pb_1 from "google-protobuf";
 export namespace messages {
-    export class LatestStatsRequest extends pb_1.Message {
+    export class GetLatestStatsRequest extends pb_1.Message {
         #one_of_decls: number[][] = [];
         constructor(data?: any[] | {
             discord_guild?: string;
@@ -49,8 +49,8 @@ export namespace messages {
             discord_guild?: string;
             youtube_channel?: string;
             github_repo?: string;
-        }): LatestStatsRequest {
-            const message = new LatestStatsRequest({});
+        }): GetLatestStatsRequest {
+            const message = new GetLatestStatsRequest({});
             if (data.discord_guild != null) {
                 message.discord_guild = data.discord_guild;
             }
@@ -92,8 +92,8 @@ export namespace messages {
             if (!w)
                 return writer.getResultBuffer();
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): LatestStatsRequest {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new LatestStatsRequest();
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetLatestStatsRequest {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetLatestStatsRequest();
             while (reader.nextField()) {
                 if (reader.isEndGroup())
                     break;
@@ -115,11 +115,11 @@ export namespace messages {
         serializeBinary(): Uint8Array {
             return this.serialize();
         }
-        static deserializeBinary(bytes: Uint8Array): LatestStatsRequest {
-            return LatestStatsRequest.deserialize(bytes);
+        static deserializeBinary(bytes: Uint8Array): GetLatestStatsRequest {
+            return GetLatestStatsRequest.deserialize(bytes);
         }
     }
-    export class LatestStatsResponse extends pb_1.Message {
+    export class GetLatestStatsResponse extends pb_1.Message {
         #one_of_decls: number[][] = [];
         constructor(data?: any[] | {
             discord_stats?: dependency_1.messages.LatestDiscordStats;
@@ -171,8 +171,8 @@ export namespace messages {
             discord_stats?: ReturnType<typeof dependency_1.messages.LatestDiscordStats.prototype.toObject>;
             youtube_stats?: ReturnType<typeof dependency_1.messages.LatestYoutubeStats.prototype.toObject>;
             github_stats?: ReturnType<typeof dependency_1.messages.LatestGithubStats.prototype.toObject>;
-        }): LatestStatsResponse {
-            const message = new LatestStatsResponse({});
+        }): GetLatestStatsResponse {
+            const message = new GetLatestStatsResponse({});
             if (data.discord_stats != null) {
                 message.discord_stats = dependency_1.messages.LatestDiscordStats.fromObject(data.discord_stats);
             }
@@ -214,8 +214,8 @@ export namespace messages {
             if (!w)
                 return writer.getResultBuffer();
         }
-        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): LatestStatsResponse {
-            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new LatestStatsResponse();
+        static deserialize(bytes: Uint8Array | pb_1.BinaryReader): GetLatestStatsResponse {
+            const reader = bytes instanceof pb_1.BinaryReader ? bytes : new pb_1.BinaryReader(bytes), message = new GetLatestStatsResponse();
             while (reader.nextField()) {
                 if (reader.isEndGroup())
                     break;
@@ -237,8 +237,8 @@ export namespace messages {
         serializeBinary(): Uint8Array {
             return this.serialize();
         }
-        static deserializeBinary(bytes: Uint8Array): LatestStatsResponse {
-            return LatestStatsResponse.deserialize(bytes);
+        static deserializeBinary(bytes: Uint8Array): GetLatestStatsResponse {
+            return GetLatestStatsResponse.deserialize(bytes);
         }
     }
 }

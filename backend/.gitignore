@@ -1,7 +1,13 @@
+# Intermediate Artifacts
 venv/
 out/
 modules/x/messages
 modules/api/endpoints/messages
+
+# Sensitive Content
 modules/api/artifacts
+modules/api/initdb/models
+modules/api/initdb/content/pages/*.md
+modules/api/initdb/content/posts/*.md
 config*.yaml
 deploy*.yaml

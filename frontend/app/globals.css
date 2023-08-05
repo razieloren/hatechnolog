@@ -1,17 +1,83 @@
-@import url('https://fonts.googleapis.com/css2?family=Alef:wght@400;700&display=swap');
+@import url("https://use.typekit.net/zlg4ewt.css");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-.nav-button {
-  @apply rounded py-2 px-4 w-28 bg-gradient-to-t from-indigo-500 to-blue-800 hover:hue-rotate-30 focus:ring-4 focus:outline-none focus:ring-purple-200
+.noam-regular {
+  font-family: "noam-text", serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
-.social-button {
-  @apply rounded-xl flex gap-6 items-center py-2 px-4 rounded bg-black hover:bg-indigo-800
+.noam-bold {
+  font-family: "noam-text", serif;
+  font-weight: 700;
+  font-style: normal;
 }
 
-.responsive-flex {
-  @apply flex xl:flex-row 2xl:gap-x-0 gap-x-20 2xl:gap-y-0 gap-y-8 flex-col xl:items-center 
+.in-link {
+  @apply text-link hover:text-link-hover font-bold
+}
+
+.md-file h2 {
+  @apply font-bold text-2xl
+}
+
+.md-file h3 {
+  @apply font-bold text-xl
+}
+
+.md-file h4 {
+  @apply font-bold text-lg
+}
+
+.md-file ul {
+  @apply list-disc mx-8
+}
+
+.md-file a {
+  @apply in-link
+}
+ 
+@layer base {
+  :root {
+    --background: #1C4B82;
+    --foreground: hsl(224 71.4% 4.1%);
+
+    --words: #DAE1E7;
+
+    --cta: #DD6B4D;
+ 
+    --muted: #1C4B82;
+    --muted-foreground: hsl(220 8.9% 46.1%);
+ 
+    --popover: #1C4B82;
+    --popover-foreground: hsl(224 71.4% 4.1%);
+ 
+    --card: #1C4B82;
+    --card-foreground: hsl(224 71.4% 4.1%);
+ 
+    --border: #1C4B82;
+    --input: #1C4B82;
+ 
+    --primary: #183661;
+    --primary-foreground: #183661;
+ 
+    --secondary: #1C4B82;
+    --secondary-foreground: hsl(220.9 39.3% 11%);
+
+    --link: rgb(228, 175, 255);
+    --link-hover: rgb(255, 183, 249);
+ 
+    --accent: #1C4B82;
+    --accent-foreground: hsl(220.9 39.3% 11%);
+ 
+    --destructive: hsl(0 84.2% 60.2%);
+    --destructive-foreground: hsl(210 20% 98%);
+ 
+    --ring: #1C4B82;
+ 
+    --radius: 0.5rem;
+  }
 }
