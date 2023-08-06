@@ -18,17 +18,17 @@ export default async function UserWelcomePage() {
     console.log(user.state);
 
     return (
-        <div className="text-lg font-bold">
+        <div className="text-lg font-bold text-center">
         {isLoggedIn ?
         <>
         {user.state !== user_api.UserState.CREATED ?
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 items-center text-center justify-center">
             <span>הגיע הזמן להשלים את ההרשמה לקהילה!</span>
-            <div className="flex flex-col gap-2 bg-purple-950 rounded-lg p-6">
+            <div className="flex flex-col gap-4 bg-purple-950 rounded-lg p-6 items-start justify-start text-start">
                 <span className="text-xl">הגדרות משתמש דיסקורד</span>
                 <div>
                 {!user.is_hatechnolog_member &&
-                    <div className="flex gap-2 items-center ">
+                    <div className="flex gap-2 items-center justify-start text-start">
                         <Image className="h-10 w-10" src={failureIcon} alt="Setup Failure"/>
                         <div className="flex flex-col gap-2">
                             <span>לא מצאנו אותך בשרת הדיסוקרד של הקהילה 😢</span>
@@ -41,7 +41,7 @@ export default async function UserWelcomePage() {
                 </div>
                 <div>
                 {!user.email_verified &&
-                    <div className="flex gap-2 items-center ">
+                    <div className="flex gap-2 items-center justify-start text-start">
                         <Image className="h-10 w-10" src={failureIcon} alt="Hatechnolog Setup Missing"/>
                         <div className="flex flex-col gap-2">
                             <span>כתובת האימייל שלך אינה מאומתת</span>

@@ -18,10 +18,6 @@ const NarBarItems: NavbarItem[] = [
         title: "קורסים",
         href: "/courses"
     },
-    {
-        title: "צרו קשר",
-        href: "/contact"
-    },
 ]
 
 export default function Navbar() {
@@ -30,7 +26,7 @@ export default function Navbar() {
             <div className="sm:flex sm:gap-10 gap-8 text-l hidden items-center">
                 {NarBarItems.map(item => {
                     return (
-                        <Link href={item.href}>
+                        <Link key={item.title} href={item.href}>
                             <button className="hover:text-white font-bold">
                             {item.title}
                             </button>
@@ -49,7 +45,7 @@ export default function Navbar() {
                             <ul className="flex flex-col gap-4 text-center px-4 py-2">
                                 {NarBarItems.map(item => {
                                     return (
-                                        <Link href={item.href}>
+                                        <Link key={item.title} href={item.href}>
                                             <li key={item.title} className="hover:text-white text-l font-bold text-words w-16">
                                             {item.title}
                                             </li>

@@ -13,7 +13,7 @@ func QueryPages(dbConn *gorm.DB) *gorm.DB {
 		Preload("User").Preload("Category").
 		Where(&models.Content{
 			Type: "pages",
-		})
+		}).Order("created_at DESC")
 }
 
 func QueryPosts(dbConn *gorm.DB) *gorm.DB {
@@ -21,7 +21,7 @@ func QueryPosts(dbConn *gorm.DB) *gorm.DB {
 		Preload("User").Preload("Category").
 		Where(&models.Content{
 			Type: "posts",
-		})
+		}).Order("created_at DESC")
 }
 
 func ContentToTeaser(item *models.ContentTeaser) *content.ContentTeaser {

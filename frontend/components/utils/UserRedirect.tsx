@@ -13,7 +13,7 @@ export default function UserRedirect() {
         } catch(e) {
             router.push("/");
         }
-    }, []);
+    });
 
     return (
         <h1>איזה כיף לראות אותך 🥳</h1>
