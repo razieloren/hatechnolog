@@ -17,7 +17,7 @@ export async function GetLatestStats(): Promise<StatsProps> {
             youtube_channel: process.env.YOUTUBE_CHANNEL_NAME!,
             github_repo: process.env.GITHUB_CHANNEL_NAME!,
         })
-    }));
+    }), "lateststats");
     if (!wrappedResponse.has_get_latest_stats_response) {
         throw new Error("no latest_stats_response");
     }

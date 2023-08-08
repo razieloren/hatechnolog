@@ -5,7 +5,7 @@ from .exceptions import CommandFailedException, ContainerStillRunningException
 
 class SSHClient(paramiko.SSHClient):
     _DEFAULT_CMD_TIMEOUT_SEC = 10
-    _CONTAINER_STOP_GRACE_SEC = 5
+    _CONTAINER_STOP_GRACE_SEC = 10
 
     def run_command(self, command: str, raise_on_error: bool = True) -> str:
         _, stdout, _ = self.exec_command(

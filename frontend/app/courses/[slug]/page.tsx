@@ -1,6 +1,6 @@
-import { GetCourse, GetCoursesTeasers } from "@/utils/rpc/courses.server";
+import { GetCourse } from "@/utils/rpc/courses.server";
 import { Separator } from '@/components/ui/separator'
-import { Metadata, ResolvedMetadata } from "next";
+import { Metadata } from "next";
 
 type CoursePageProps = {
     params: {
@@ -10,7 +10,6 @@ type CoursePageProps = {
 
 export async function generateMetadata(
     { params }: CoursePageProps,
-    parent: ResolvedMetadata
   ): Promise<Metadata> {
     const content = await GetCourse(params.slug);   
     return {
@@ -28,13 +27,6 @@ export async function generateMetadata(
             siteName: "הטכנולוג",
         },
     }
-}
-
-export async function generateStaticParams() {
-    const teasers = await GetCoursesTeasers()
-    return teasers.map(teaser => ({
-        slug: teaser.slug,
-    }))
 }
 
 export default async function CoursePage(props: CoursePageProps) {

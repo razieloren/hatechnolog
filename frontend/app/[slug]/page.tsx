@@ -1,6 +1,6 @@
 import Content from '@/components/pages/index/Content';
 import { GetPage } from '@/utils/rpc/content.server';
-import { Metadata, ResolvedMetadata } from 'next';
+import { Metadata } from 'next';
 
 type AppPageProps = {
     params: {
@@ -10,7 +10,6 @@ type AppPageProps = {
 
 export async function generateMetadata(
     { params }: AppPageProps,
-    parent: ResolvedMetadata
   ): Promise<Metadata> {
     const content = await GetPage(params.slug);   
     return {

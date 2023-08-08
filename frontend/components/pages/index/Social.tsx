@@ -6,7 +6,6 @@ import goldenStar from '@/public/misc/golden_star.svg'
 import githubLogo from '@/public/social/github_logo_blue.svg'
 import { GetLatestStats } from '@/utils/rpc/stats.server'
 
-
 export default async function Social() {
     const stats = await GetLatestStats();
     const avgJoinHours = (stats.discord.join_avg_sec / 60 / 60).toLocaleString();

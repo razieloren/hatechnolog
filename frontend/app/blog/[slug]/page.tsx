@@ -1,6 +1,6 @@
 import Content from "@/components/pages/index/Content";
-import { GetPost, GetPostsTeasers } from "@/utils/rpc/content.server";
-import { Metadata, ResolvedMetadata } from "next";
+import { GetPost } from "@/utils/rpc/content.server";
+import { Metadata } from "next";
 
 type PostPageProps = {
     params: {
@@ -10,7 +10,6 @@ type PostPageProps = {
 
 export async function generateMetadata(
     { params }: PostPageProps,
-    parent: ResolvedMetadata
   ): Promise<Metadata> {
     const content = await GetPost(params.slug);   
     return {
@@ -31,13 +30,6 @@ export async function generateMetadata(
             siteName: "הטכנולוג",
         },
     }
-}
-
-export async function generateStaticParams() {
-    const teasers = await GetPostsTeasers()
-    return teasers.map(teaser => ({
-        slug: teaser.slug,
-    }))
 }
 
 export default async function PostPage(props: PostPageProps) {

@@ -10,7 +10,7 @@ class DockerClient():
         self._client.close()
 
     def push_image(self, module_name: str, version: str, host: str, registry: str, username: str, password: str) -> str:
-        image_name = f'hatechnolog/modules/{module_name}-linux:{version}'
+        image_name = f'hatechnolog/{module_name}-linux:{version}'
         image: Image = self._client.images.get(image_name)
         taggedImage = f'{host}/{registry}/{image_name}'
         image.tag(taggedImage)

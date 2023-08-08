@@ -1,5 +1,4 @@
 # Intermediate Artifacts
-venv/
 out/
 modules/x/messages
 modules/api/endpoints/messages
@@ -10,4 +9,3 @@ modules/api/initdb/models
 modules/api/initdb/content/pages/*.md
 modules/api/initdb/content/posts/*.md
 config*.yaml
-deploy*.yaml

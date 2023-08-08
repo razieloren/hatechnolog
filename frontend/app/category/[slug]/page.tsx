@@ -1,5 +1,5 @@
-import { GetCategoriesTeasers, GetCategory } from "@/utils/rpc/content.server";
-import { Metadata, ResolvedMetadata } from "next";
+import { GetCategory } from "@/utils/rpc/content.server";
+import { Metadata } from "next";
 import Link from "next/link";
 
 type CategoryPageProps = {
@@ -10,7 +10,6 @@ type CategoryPageProps = {
 
 export async function generateMetadata(
     { params }: CategoryPageProps,
-    parent: ResolvedMetadata
   ): Promise<Metadata> {
     const content = await GetCategory(params.slug);   
     return {
@@ -28,13 +27,6 @@ export async function generateMetadata(
             siteName: "הטכנולוג",
         },
     }
-}
-
-export async function generateStaticParams() {
-    const teasers = await GetCategoriesTeasers()
-    return teasers.map(teaser => ({
-        slug: teaser.slug,
-    }))
 }
 
 export default async function PostPage(props: CategoryPageProps) {

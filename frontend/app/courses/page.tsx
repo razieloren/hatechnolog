@@ -27,7 +27,7 @@ export default async function CoursesPage() {
                 {teasers.map(teaser => {
                     return (
                         <Link key={teaser.slug} className="relative hover:drop-shadow-xl" href={`/courses/${teaser.slug}`} target="_blank">
-                            <Image src={`https://i.ytimg.com/vi/${teaser.main_video_id}/maxresdefault.jpg`} width={480} height={270} alt={teaser.title}/>
+                            <img src={`https://i.ytimg.com/vi/${teaser.main_video_id}/maxresdefault.jpg`} width={480} height={270} alt={teaser.title}/>
                             <div className="absolute top-0 left-auto w-full px-3 py-5 bg-opacity-70 bg-black">
                                 <h2 className="font-bold text-lg">{teaser.title}</h2>
                             </div>

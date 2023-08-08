@@ -9,7 +9,12 @@ const nextConfig = {
         DISCORD_INVITE_URL: process.env.DISCORD_INVITE_URL,
     },
     images: {
-        domains: ["cdn.discordapp.com", "i.ytimg.com"]
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: '**',
+            },
+        ],
     },
     experimental: {
         appDir: true,

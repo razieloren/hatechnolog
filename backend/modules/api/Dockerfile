@@ -10,11 +10,10 @@ RUN DEBIAN_FRONTEND=noninteractive \
     && apt-get install -y ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
     && update-ca-certificates \
-    && useradd -ms /bin/bash user \
-    && chown user:user /query /config.yaml \
+    && mkdir -p /etc/letsencrypt/archive/hatechnolog.com \
+    && mkdir -p /etc/letsencrypt/live/hatechnolog.com \
     && chmod +x /api
 
-USER user
 ENV PATH="${PATH}:/"
 
 CMD ["api"]

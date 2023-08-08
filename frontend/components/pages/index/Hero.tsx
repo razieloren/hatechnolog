@@ -1,4 +1,3 @@
-import YoutubeFrame, { YoutubeFrameProps } from "../../utils/YoutubeFrame"
 import Social from "./Social"
 
 export default function Hero() {

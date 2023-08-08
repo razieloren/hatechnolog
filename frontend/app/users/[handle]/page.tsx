@@ -1,5 +1,5 @@
 import { PublicGetUser } from "@/utils/rpc/user.server";
-import { Metadata, ResolvedMetadata } from "next";
+import { Metadata } from "next";
 import Image from "next/image";
 
 type UserPageProps = {
@@ -10,7 +10,6 @@ type UserPageProps = {
 
 export async function generateMetadata(
     { params }: UserPageProps,
-    parent: ResolvedMetadata
   ): Promise<Metadata> {
     const content = await PublicGetUser(params.handle);   
     return {

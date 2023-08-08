@@ -39,6 +39,10 @@
 .md-file a {
   @apply in-link
 }
+
+.md-file code {
+  direction: ltr;
+}
  
 @layer base {
   :root {

@@ -19,9 +19,8 @@ async function rpcRequest(url: string, request: wrapper.Wrapper, privateRequest:
         {
             method: "POST",
             body: requestData,
-            // mode: "cors",
-            // credentials: "include",
             headers: headers,
+            cache: "force-cache",
         }
     );
     if (response.status === 500) {
@@ -33,12 +32,12 @@ async function rpcRequest(url: string, request: wrapper.Wrapper, privateRequest:
     return wrapper.Wrapper.deserialize(new Uint8Array(responseData));
 }
 
-export async function ServerPublicRPCRequest(request: wrapper.Wrapper) {
+export async function ServerPublicRPCRequest(request: wrapper.Wrapper, identifier: string) {
     request.api_token = process.env.SERVER_RPC_API_TOKEN!;
-    return rpcRequest(`${process.env.API_URL!}/rpc/server`, request, false);
+    return rpcRequest(`${process.env.API_URL!}/rpc/server?id=${identifier}`, request, false);
 }
 
-export async function ServerPrivateRPCRequest(request: wrapper.Wrapper) {
+export async function ServerPrivateRPCRequest(request: wrapper.Wrapper, identifier: string) {
     request.api_token = process.env.SERVER_RPC_API_TOKEN!;
-    return rpcRequest(`${process.env.API_URL!}/rpc/private/server`, request, true);
+    return rpcRequest(`${process.env.API_URL!}/rpc/private/server?id=${identifier}`, request, true);
 }
