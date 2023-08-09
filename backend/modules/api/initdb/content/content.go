@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	CodeRe = regexp.MustCompile("<pre><code class=\"language-(?P<Lang>.+)\">(?P<Source>(.|\n|\t)+)</code></pre>")
+	CodeRe = regexp.MustCompile("<pre><code class=\"language-(?P<Lang>.+)\">(?P<Source>(.|\n|\t)+?)<\\/code><\\/pre>")
 )
 
 const (

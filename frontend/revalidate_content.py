@@ -14,7 +14,8 @@ PATHS_TO_REVALIDATE = [
     '/category',
     '/category/[slug]',
     '/blog',
-    '/blog/[slug]'
+    '/blog/[slug]',
+    '/users/[handle]',
 ]
 REVALIDATE_ROUTE = 'https://hatechnolog.com/api/revalidate'
 
