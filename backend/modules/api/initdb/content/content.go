@@ -6,11 +6,23 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/adrg/frontmatter"
+	chroma_html "github.com/alecthomas/chroma/formatters/html"
+	"github.com/alecthomas/chroma/lexers"
+	"github.com/alecthomas/chroma/styles"
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
+)
+
+var (
+	CodeRe = regexp.MustCompile("<pre><code class=\"language-(?P<Lang>.+)\">(?P<Source>(.|\n|\t)+)</code></pre>")
+)
+
+const (
+	CodeStyle = "github-dark"
 )
 
 type ContentMetadata struct {
@@ -49,7 +61,41 @@ func markdownToHtml(md []byte) []byte {
 	p := parser.NewWithExtensions(parser.CommonExtensions)
 	opts := html.RendererOptions{Flags: html.CommonFlags}
 	renderer := html.NewRenderer(opts)
-	return markdown.ToHTML([]byte(md), p, renderer)
+	htmlContent := markdown.ToHTML([]byte(md), p, renderer)
+	for _, match := range CodeRe.FindAllSubmatch(htmlContent, -1) {
+		orig := match[0]
+		language := match[1]
+		sourceCode := match[2]
+		lexer := lexers.Get(string(language))
+		if lexer == nil {
+			lexer = lexers.Fallback
+		}
+		style := styles.Get(CodeStyle)
+		if style == nil {
+			style = styles.Fallback
+		}
+		iterator, err := lexer.Tokenise(nil, string(sourceCode))
+		if err != nil {
+			fmt.Println("error tokenzing source code: ", err)
+			continue
+		}
+		formatter := chroma_html.New(
+			chroma_html.TabWidth(4), chroma_html.WithLineNumbers(true),
+			chroma_html.WithLineNumbers(true), chroma_html.WithClasses(true),
+			chroma_html.ClassPrefix("chr-"))
+
+		var htmlBuffer bytes.Buffer
+		if err := formatter.Format(&htmlBuffer, style, iterator); err != nil {
+			fmt.Println("error formatting source code: ", err)
+			continue
+		}
+		formattedCode := htmlBuffer.Bytes()
+		formattedCode = bytes.ReplaceAll(formattedCode, []byte("&amp;"), []byte("&"))
+		htmlContent = bytes.ReplaceAll(htmlContent, orig, formattedCode)
+	}
+	// Code sections are always left-to-right.
+	htmlContent = bytes.ReplaceAll(htmlContent, []byte("<code"), []byte("<code dir=\"ltr\""))
+	return htmlContent
 }
 
 func LoadContent(contentPath string, contentType string) (*ContentMetadata, []byte, error) {

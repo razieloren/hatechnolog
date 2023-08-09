@@ -3,6 +3,7 @@ package messages;
 
 option go_package = "backend/modules/api/endpoints/messages/user";
 
+import "content/helpers.proto";
 import "google/protobuf/timestamp.proto";
 
 enum UserState {
@@ -25,14 +26,15 @@ message GetUserResponse {
     google.protobuf.Timestamp member_since = 6;
     bool is_vip = 7;
     optional string github_username = 8;
+    repeated ContentTeaser contents = 9;
 
     // Returns only for authenticated user, private data.
-    optional bool is_hatechnolog_member = 9;
-    optional bool mfa_enabled = 10;
-    optional bool email_verified = 11;
-    UserState state = 12;
+    optional bool is_hatechnolog_member = 10;
+    optional bool mfa_enabled = 11;
+    optional bool email_verified = 12;
+    UserState state = 13;
 
-    bool me = 13;
+    bool me = 14;
 }
 
 message UpdateDiscordUserRequest {

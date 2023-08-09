@@ -7,9 +7,11 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/adrg/frontmatter v0.2.0 // indirect
+	github.com/alecthomas/chroma v0.10.0 // indirect
 	github.com/brpaz/echozap v1.1.3 // indirect
 	github.com/bwmarrin/discordgo v0.27.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/dlclark/regexp2 v1.4.0 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect

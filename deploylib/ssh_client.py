@@ -8,6 +8,7 @@ class SSHClient(paramiko.SSHClient):
     _CONTAINER_STOP_GRACE_SEC = 10
 
     def run_command(self, command: str, raise_on_error: bool = True) -> str:
+        print(f'Running command: "{command}"')
         _, stdout, _ = self.exec_command(
             command, timeout=self._DEFAULT_CMD_TIMEOUT_SEC)
         status_code = stdout.channel.recv_exit_status()

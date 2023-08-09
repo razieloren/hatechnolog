@@ -2,10 +2,13 @@ package user
 
 import (
 	"backend/modules/api/endpoints/auth/models"
+	"backend/modules/api/endpoints/content"
+	content_models "backend/modules/api/endpoints/content/models"
 	"backend/modules/api/endpoints/messages"
 	"backend/modules/api/endpoints/messages/user"
 	"backend/x/web"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -38,6 +41,20 @@ func GetUser(dbConn *gorm.DB, c echo.Context, handle string, withPrivate bool) e
 	response.IsVip = requestedUser.DiscordUser.IsVIP
 	if requestedUser.GithubUserID != nil {
 		response.GithubUsername = &requestedUser.GithubUser.Username
+	}
+
+	var contents []content_models.ContentTeaser
+	if err := content.QueryPosts(dbConn).Where(&content_models.Content{
+		UserID: requestedUser.ID,
+	}).Find(&contents).Error; err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			c.Logger().Error("Contents from user: ", err)
+			return web.GenerateInternalServerError()
+		}
+	}
+	fmt.Println(requestedUser.ID, len(contents))
+	for _, item := range contents {
+		response.Contents = append(response.Contents, content.ContentToTeaser(&item))
 	}
 
 	if withPrivate {

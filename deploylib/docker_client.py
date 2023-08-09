@@ -1,3 +1,4 @@
+import time
 import docker
 
 from docker.models.images import Image
@@ -17,6 +18,7 @@ class DockerClient():
         try:
             self._client.login(registry=host, username=username, password=password)
             self._client.images.push(taggedImage)
+            time.sleep(1)
         finally:
             self._client.images.remove(taggedImage)
         return taggedImage

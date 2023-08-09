@@ -28,16 +28,16 @@ func main() {
 	}
 
 	entries := []InitDBEntry{
-		{
-			Name:        "auth",
-			AutoMigrate: models.AutoMigrateAuth,
-			CreateData:  models.CreateDataAuth,
-		},
-		{
-			Name:        "courses",
-			AutoMigrate: models.AutoMigrateCourses,
-			CreateData:  models.CreateDataCourses,
-		},
+		// {
+		// 	Name:        "auth",
+		// 	AutoMigrate: models.AutoMigrateAuth,
+		// 	CreateData:  models.CreateDataAuth,
+		// },
+		// {
+		// 	Name:        "courses",
+		// 	AutoMigrate: models.AutoMigrateCourses,
+		// 	CreateData:  models.CreateDataCourses,
+		// },
 		{
 			Name:        "content",
 			AutoMigrate: models.AutoMigrateContent,
