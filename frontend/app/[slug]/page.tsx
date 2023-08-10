@@ -15,7 +15,7 @@ export async function generateMetadata(
     return {
         metadataBase: new URL("https://hatechnolog.com"),
         title: `הטכנולוג - ${content.teaser.title}`,
-        description: `${content.teaser.title} by ${content.teaser.author}`,
+        description: content.teaser.description,
         keywords: [content.teaser.category],
         authors: [{name: content.teaser.author, url: `/users/${content.teaser.author}`}],
         creator: content.teaser.author,
@@ -25,10 +25,30 @@ export async function generateMetadata(
         },
         openGraph: {
             title: `הטכנולוג - ${content.teaser.title}`,
-            description: `${content.teaser.title} by ${content.teaser.author}`,
+            description: content.teaser.description,
             url: `https://hatechnolog.com/${content.teaser.slug}`,
             siteName: "הטכנולוג",
+            images: {
+                url: "https://hatechnolog.fra1.cdn.digitaloceanspaces.com/technolog_logo.png",
+                secureUrl: "https://hatechnolog.fra1.cdn.digitaloceanspaces.com/technolog_logo.png",
+                alt: "Hatechnolog Logo",
+                width: 256,
+                height: 256,
+            }
         },
+        twitter: {
+            site: "https://hatechnolog.com",
+            creator: "@hatechnolog",
+            description: content.teaser.description,
+            title: `הטכנולוג - ${content.teaser.title}`,
+            images: {
+                url: "https://hatechnolog.fra1.cdn.digitaloceanspaces.com/technolog_logo.png",
+                secureUrl: "https://hatechnolog.fra1.cdn.digitaloceanspaces.com/technolog_logo.png",
+                alt: "Hatechnolog Logo",
+                width: 256,
+                height: 256,
+            }
+        }
     }
 }
 

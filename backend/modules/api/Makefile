@@ -1,5 +1,5 @@
 MAJOR_VERSION := 1
-MINOR_VERSION := 2
+MINOR_VERSION := 4
 
 OUT_DIR := out
 PWD=$(shell pwd)

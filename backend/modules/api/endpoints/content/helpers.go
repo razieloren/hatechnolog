@@ -26,14 +26,19 @@ func QueryPosts(dbConn *gorm.DB) *gorm.DB {
 
 func ContentToTeaser(item *models.ContentTeaser) *content.ContentTeaser {
 	return &content.ContentTeaser{
-		Slug:      item.Slug,
-		Title:     item.Title,
-		Author:    item.User.Handle,
-		Category:  item.Category.Slug,
-		Monetized: item.Monetized,
-		Upvotes:   uint32(item.Upvotes),
+		Slug:        item.Slug,
+		Title:       item.Title,
+		Description: item.Description,
+		Author:      item.User.Handle,
+		Category:    item.Category.Slug,
+		Type:        item.Type,
+		Monetized:   item.Monetized,
+		Upvotes:     uint32(item.Upvotes),
 		Published: &timestamppb.Timestamp{
 			Seconds: item.CreatedAt.Unix(),
+		},
+		Edited: &timestamppb.Timestamp{
+			Seconds: item.UpdatedAt.Unix(),
 		},
 	}
 }
@@ -41,20 +46,21 @@ func ContentToTeaser(item *models.ContentTeaser) *content.ContentTeaser {
 func ContentToDetails(item *models.Content) *content.ContentDetails {
 	return &content.ContentDetails{
 		Teaser: &content.ContentTeaser{
-			Slug:      item.Slug,
-			Title:     item.Title,
-			Author:    item.User.Handle,
-			Category:  item.Category.Slug,
-			Monetized: item.Monetized,
-			Upvotes:   uint32(item.Upvotes),
+			Slug:        item.Slug,
+			Title:       item.Title,
+			Description: item.Description,
+			Author:      item.User.Handle,
+			Category:    item.Category.Slug,
+			Monetized:   item.Monetized,
+			Upvotes:     uint32(item.Upvotes),
 			Published: &timestamppb.Timestamp{
 				Seconds: item.CreatedAt.Unix(),
+			},
+			Edited: &timestamppb.Timestamp{
+				Seconds: item.UpdatedAt.Unix(),
 			},
 		},
 		Ltr:               item.Ltr,
 		CompressedContent: item.CompressedHtml,
-		Edited: &timestamppb.Timestamp{
-			Seconds: item.UpdatedAt.Unix(),
-		},
 	}
 }

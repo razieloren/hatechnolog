@@ -58,7 +58,7 @@ def main():
                                         ssh_props['identityFilePassword'])
             try:
                 module_logger.info('Stopping remote container')
-                ssh_client.stop_module_container(module_name)
+                ssh_client.stop_module_container(module_name.replace('/', '_'))
                 module_logger.info('Logging in to docker registry')
                 ssh_client.run_command(f'docker login {docker["host"]} -u {docker["user"]} -p {docker["password"]}')
                 module_logger.info(f'Pulling latest image: {taggedImage}')
@@ -67,7 +67,7 @@ def main():
                 container_id = ssh_client.run_command(f'docker run {docker_args} --name {container_name} --rm -d {taggedImage}')[:12]
                 module_logger.info(f'New container ID: {container_id}')
                 time.sleep(10)
-                if ssh_client.get_module_active_container(module_name) is None:
+                if ssh_client.get_module_active_container(module_name.replace('/', '_')) is None:
                     logger.error(f'Container is gone, it might be dead :(')
                 module_logger.info(f'Done deploying :)')
             finally:

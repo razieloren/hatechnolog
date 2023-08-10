@@ -26,7 +26,27 @@ export async function generateMetadata(
             description: `פרופיל המשתמש של ${content.handle}`,
             url: `https://hatechnolog.com/users/${content.handle}`,
             siteName: "הטכנולוג",
+            images: {
+                url: content.avatar_url,
+                secureUrl: content.avatar_url,
+                alt: `Hatechnolog User Avatar of ${content.handle}`,
+                width: 256,
+                height: 256,
+            }
         },
+        twitter: {
+            site: "https://hatechnolog.com",
+            creator: "@hatechnolog",
+            description: `פרופיל המשתמש של ${content.handle}`,
+            title: `הטכנולוג - משתמש - ${content.handle}`,
+            images: {
+                url: content.avatar_url,
+                secureUrl: content.avatar_url,
+                alt: `Hatechnolog User Avatar of ${content.handle}`,
+                width: 256,
+                height: 256,
+            }
+        }
     }
 }
 
@@ -38,12 +58,13 @@ export default async function UserPage(props: UserPageProps) {
     return (
         <div className="w-full">
             <div className="flex flex-col gap-4">
-                <div className="flex gap-4 items-center">
+                <div className="flex gap-4 items-center" itemScope itemType="https://schema.org/Person">
                     <Avatar>
-                        <AvatarImage src={user.avatar_url} />
+                        <AvatarImage itemProp="image" content={user.avatar_url} src={user.avatar_url} />
                         <AvatarFallback>{user.handle[0].toUpperCase()}</AvatarFallback>
                     </Avatar>
-                    <h1 className="text-xl font-bold">{user.handle}</h1>
+                    <h1 itemProp="name" className="text-xl font-bold">{user.handle}</h1>
+                    <span hidden itemProp="url" content={`/users/${user.handle}`} />
                 </div>
                 <div className="flex gap-2 text-md">
                     <span className="font-bold">ותק:</span>

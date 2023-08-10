@@ -36,6 +36,7 @@ require (
 	github.com/matoous/go-nanoid/v2 v2.0.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
+	github.com/pahanini/go-sitemap-generator v0.0.0-20161102132113-fe0794d1e806 // indirect
 	github.com/ravener/discord-oauth2 v0.0.0-20230514095040-ae65713199b3 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect

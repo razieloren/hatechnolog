@@ -22,6 +22,7 @@ func EndpointGetCoursesTeasers(dbConn *gorm.DB, c echo.Context, request *courses
 			Slug:        teaser.Slug,
 			Title:       teaser.Title,
 			MainVideoId: teaser.MainVideoID,
+			Description: teaser.Description,
 		})
 	}
 	return web.GenerateResponse(c, &messages.Wrapper{
@@ -47,10 +48,9 @@ func EndpointGetCourse(dbConn *gorm.DB, c echo.Context, request *courses.GetCour
 						Slug:        course.Slug,
 						Title:       course.Title,
 						MainVideoId: course.MainVideoID,
+						Description: course.Description,
 					},
-
-					Description: course.Description,
-					PlaylistId:  course.PlaylistID,
+					PlaylistId: course.PlaylistID,
 				},
 			},
 		},

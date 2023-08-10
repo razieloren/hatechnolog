@@ -18,7 +18,7 @@ class SSHClient(paramiko.SSHClient):
     
     def get_module_active_container(self, module_name: str) -> str:
         try:
-            container_id = self.run_command(f'docker ps -a | grep {module_name}_').split()[0]
+            container_id = self.run_command(f'docker ps -a | grep "{module_name}_"').split()[0]
             return container_id
         except CommandFailedException:
             return None

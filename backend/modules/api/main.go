@@ -38,8 +38,9 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	// Registering RPC endpoints.
+	// Registering Router endpoints.
 	router := endpoints.NewRouter(dbConn, serverIdentity)
+	e.GET("/sitemap.xml", router.Sitemap)
 	rpcGroup := e.Group("/rpc")
 	rpcGroup.POST("/server",
 		router.PublicRPCServer,

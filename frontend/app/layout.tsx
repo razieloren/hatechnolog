@@ -18,7 +18,7 @@ export default async function RootLayout({
             gtag('js', new Date());
             gtag('config', '${process.env.GA_MEASUREMENT_ID}');
           `}
-        </Script  >
+        </Script>
         <body dir="rtl" className="m-0 p-0 bg-primary text-words noam-regular">
             <div className="w-11/12 container mx-auto flex flex-col gap-6">
                 <Header/>

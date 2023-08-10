@@ -5,6 +5,7 @@ import (
 	"backend/modules/api/endpoints/content"
 	"backend/modules/api/endpoints/courses"
 	"backend/modules/api/endpoints/messages"
+	"backend/modules/api/endpoints/sitemap"
 	"backend/modules/api/endpoints/stats"
 	"backend/modules/api/endpoints/user"
 	"backend/x/identity"
@@ -71,6 +72,10 @@ func (router *Router) SessionMiddleware(next echo.HandlerFunc) echo.HandlerFunc 
 		c.Set(sessionUserKey, user)
 		return next(c)
 	}
+}
+
+func (router *Router) Sitemap(c echo.Context) error {
+	return sitemap.EndpointSitemap(router.dbConn, c)
 }
 
 func (router *Router) PublicRPCClient(c echo.Context) error {

@@ -1,5 +1,5 @@
 MAJOR_VERSION := 1
-MINOR_VERSION := 6
+MINOR_VERSION := 7
 
 LINUX_IMAGE_NAME := hatechnolog/frontend-linux:${MAJOR_VERSION}.${MINOR_VERSION}
 DARWIN_IMAGE_NAME := hatechnolog/frontend-drawin:${MAJOR_VERSION}.${MINOR_VERSION}

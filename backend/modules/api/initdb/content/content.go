@@ -26,20 +26,22 @@ const (
 )
 
 type ContentMetadata struct {
-	Slug      string `yaml:"slug"`
-	Title     string `yaml:"title"`
-	Author    string `yaml:"author"`
-	Ltr       bool   `yaml:"ltr"`
-	Monetized bool   `yaml:"monetized"`
-	Category  string `yaml:"category"`
-	Type      string `yaml:"-"`
-	Hash      []byte `yaml:"-"`
+	Slug        string `yaml:"slug"`
+	Title       string `yaml:"title"`
+	Description string `yaml:"description"`
+	Author      string `yaml:"author"`
+	Ltr         bool   `yaml:"ltr"`
+	Monetized   bool   `yaml:"monetized"`
+	Category    string `yaml:"category"`
+	Type        string `yaml:"-"`
+	Hash        []byte `yaml:"-"`
 }
 
 func (metadata *ContentMetadata) CalcHash(content []byte) {
 	hash := sha256.New()
 	hash.Write([]byte(metadata.Slug))
 	hash.Write([]byte(metadata.Title))
+	hash.Write([]byte(metadata.Description))
 	hash.Write([]byte(metadata.Author))
 	if metadata.Monetized {
 		hash.Write([]byte{1})

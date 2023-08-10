@@ -30,6 +30,7 @@ type Content struct {
 	Slug           string `gorm:"NOT NULL; UNIQUE"`
 	Type           string `gorm:"NOT NULL;"`
 	Title          string `gorm:"NOT NULL"`
+	Description    string `gorm:"NOT NULL"`
 	UserID         uint   `gorm:"NOT NULL"`
 	User           models.User
 	Ltr            bool   `gorm:"NOT NULL"`
@@ -42,15 +43,18 @@ type Content struct {
 }
 
 type ContentTeaser struct {
-	Slug       string
-	Title      string
-	UserID     uint
-	User       models.User
-	Upvotes    uint
-	CategoryID uint
-	Category   Category
-	Monetized  bool
-	CreatedAt  time.Time
+	Slug        string
+	Title       string
+	Description string
+	Type        string
+	UserID      uint
+	User        models.User
+	Upvotes     uint
+	CategoryID  uint
+	Category    Category
+	Monetized   bool
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 func (content *Content) TableName() string {

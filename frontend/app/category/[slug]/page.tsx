@@ -22,10 +22,30 @@ export async function generateMetadata(
         },
         openGraph: {
             title: `הטכנולוג - ${content.teaser.name}`,
-            description: `כל הפוסטים מקטגוריית ${content.teaser.name}`,
+            description: content.teaser.description,
             url: `https://hatechnolog.com/category/${content.teaser.slug}`,
             siteName: "הטכנולוג",
+            images: {
+                url: "https://hatechnolog.fra1.cdn.digitaloceanspaces.com/technolog_logo.png",
+                secureUrl: "https://hatechnolog.fra1.cdn.digitaloceanspaces.com/technolog_logo.png",
+                alt: "Hatechnolog Logo",
+                width: 256,
+                height: 256,
+            }
         },
+        twitter: {
+            site: "https://hatechnolog.com",
+            creator: "@hatechnolog",
+            description: content.teaser.description,
+            title: `הטכנולוג - ${content.teaser.name}`,
+            images: {
+                url: "https://hatechnolog.fra1.cdn.digitaloceanspaces.com/technolog_logo.png",
+                secureUrl: "https://hatechnolog.fra1.cdn.digitaloceanspaces.com/technolog_logo.png",
+                alt: "Hatechnolog Logo",
+                width: 256,
+                height: 256,
+            }
+        }
     }
 }
 
@@ -38,9 +58,17 @@ export default async function PostPage(props: CategoryPageProps) {
             <div className="my-4 flex flex-col gap-4">
                 {details.contents.map(content => {
                     return (
-                        <Link key={content.slug} className="in-link" href={`/blog/${content.slug}`} target="_blank">
-                            <h1>{content.title}</h1>
-                        </Link>
+                        <div key={content.slug} className="flex gap-2" itemScope itemType="https://schema.org/NewsArticle">
+                            <Link itemProp="url" className="in-link" href={`${content.type === "posts" ? "/blog" : ""}/${content.slug}`} target="_blank">
+                                <h1 itemProp="headline">{content.title}</h1>
+                            </Link>
+                            <span>מאת</span>
+                            <span itemProp="author" itemScope itemType="https://schema.org/Person">
+                                <Link itemProp="url" className="in-link" href={`/users/${content.author}`} target="_blank">
+                                    <h1 itemProp="name">{content.author}</h1>
+                                </Link>
+                            </span>
+                        </div>
                     )
                 })}
             </div>

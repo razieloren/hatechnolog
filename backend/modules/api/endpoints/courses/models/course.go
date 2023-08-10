@@ -15,7 +15,6 @@ type CourseTeaser struct {
 	Slug        string
 	Title       string
 	Description string
-	PlaylistID  string
 	MainVideoID string
 }
 

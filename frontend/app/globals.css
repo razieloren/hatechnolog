@@ -82,11 +82,12 @@
   }
 }
 
-.md-file pre {
-  @apply py-2 px-2 mx-1 rounded-xl
-}
 /* Background */ .chr-bg { color: #e5e5e5; background-color: #000000; -moz-tab-size: 4; -o-tab-size: 4; tab-size: 4 }
-/* PreWrapper */ .chr-chroma { color: #e5e5e5; background-color: #000000; -moz-tab-size: 4; -o-tab-size: 4; tab-size: 4; font-family: "Courier New"; @apply w-fit float-left }
+/* PreWrapper */ .chr-chroma { color: #e5e5e5; background-color: #000000; -moz-tab-size: 4; -o-tab-size: 4; tab-size: 4; font-family: "Courier New"; @apply w-11/12 py-2 px-2 mx-1 rounded-xl self-center justify-end }
+.chr-chroma code {
+  overflow: auto;
+  @apply flex flex-col w-full
+}
 /* LineNumbers targeted by URL anchor */ .chr-chroma .chr-ln:target { color: #e5e5e5; background-color: #191919 }
 /* LineNumbersTable targeted by URL anchor */ .chr-chroma .chr-lnt:target { color: #e5e5e5; background-color: #191919 }
 /* Error */ .chr-chroma .chr-err { color: #ff0000 }
@@ -95,7 +96,7 @@
 /* LineHighlight */ .chr-chroma .chr-hl { background-color: #191919 }
 /* LineNumbersTable */ .chr-chroma .chr-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #727272 }
 /* LineNumbers */ .chr-chroma .chr-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #727272 }
-/* Line */ .chr-chroma .chr-line { display: flex; }
+/* Line */ .chr-chroma .chr-line { @apply flex }
 /* Keyword */ .chr-chroma .chr-k { color: #ffffff; font-weight: bold }
 /* KeywordConstant */ .chr-chroma .chr-kc { color: #ffffff; font-weight: bold }
 /* KeywordDeclaration */ .chr-chroma .chr-kd { color: #ffffff; font-weight: bold }
@@ -139,3 +140,10 @@
 /* GenericStrong */ .chr-chroma .chr-gs { font-weight: bold }
 /* GenericSubheading */ .chr-chroma .chr-gu { font-weight: bold }
 /* GenericUnderline */ .chr-chroma .chr-gl { text-decoration: underline }
+.chr-chroma .chr-cl {
+  word-wrap: normal;
+  width: 100%;
+}
+.chr-chroma .chr-cl span {
+  overflow: auto;
+ }
